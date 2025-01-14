@@ -6,10 +6,26 @@
 #
 
 import json
+import re
 import sys
 
 import agent
 
+
+def parse_url(url):
+    # Extract the protocol (http or https)
+    protocol_match = re.match(r"^(https?)://", url)
+    protocol = protocol_match.group(1) if protocol_match else None
+
+    # Extract the dynamic domain (e.g., ".dynamicdomain.com")
+    domain_match = re.search(r"\.[^.]+\.[^.]+$", url)
+    dynamic_domain = domain_match.group(0) if domain_match else None
+
+    return protocol, dynamic_domain
+
+
+host = data.get("host")
+protocol, dynamic_domain = parse_url(host)
 # Try to parse the stdin as JSON.
 # If parsing fails, output everything to stderr
 data = json.load(sys.stdin)
@@ -26,24 +42,24 @@ agent.write_envfile("mongo.env", mongo)
 nginx = {}
 agent.write_envfile("nginx.env", nginx)
 
-DJANGO_DEBUG = data.get("DJANGO_DEBUG")
-PYTHONUNBUFFERED = data.get("PYTHONUNBUFFERED")
+DJANGO_DEBUG = data.get("DJANGO_DEBUG", "False")
+PYTHONUNBUFFERED = data.get("PYTHONUNBUFFERED", "1")
 
-REDIS_SESSION_URL = data.get("REDIS_SESSION_URL")
-ENKETO_REDIS_MAIN_URL = data.get("ENKETO_REDIS_MAIN_URL")
-CELERY_BROKER_URL = data.get("CELERY_BROKER_URL")
-CACHE_URL = data.get("CACHE_URL")
+REDIS_SESSION_URL = data.get("REDIS_SESSION_URL", "redis://redis-app:6379")
+ENKETO_REDIS_MAIN_URL = data.get("ENKETO_REDIS_MAIN_URL", "redis://redis-app:6379")
+CELERY_BROKER_URL = data.get("CELERY_BROKER_URL", "redis://redis-app:6379")
+CACHE_URL = data.get("CACHE_URL", "redis://redis-app:6379")
 SERVICE_ACCOUNT_BACKEND_URL = data.get("SERVICE_ACCOUNT_BACKEND_URL")
-PUBLIC_REQUEST_SCHEME = data.get("PUBLIC_REQUEST_SCHEME")
-SESSION_COOKIE_DOMAIN = data.get("SESSION_COOKIE_DOMAIN")
-KOBOCAT_INTERNAL_URL = data.get("KOBOCAT_INTERNAL_URL")
-KOBOCAT_URL = data.get("KOBOCAT_URL")
-MONGO_DB_URL = data.get("MONGO_DB_URL")
-KOBOFORM_INTERNAL_URL = data.get("KOBOFORM_INTERNAL_URL")
-KOBOFORM_URL = data.get("KOBOFORM_URL")
-ENKETO_URL = data.get("ENKETO_URL")
-ENKETO_INTERNAL_URL = data.get("ENKETO_INTERNAL_URL")
-SERVICE_ACCOUNT_WHITELISTED_HOSTS = data.get("SERVICE_ACCOUNT_WHITELISTED_HOSTS")
+PUBLIC_REQUEST_SCHEME = data.get("PUBLIC_REQUEST_SCHEME", "https")
+SESSION_COOKIE_DOMAIN = data.get("SESSION_COOKIE_DOMAIN", dynamic_domain)
+KOBOCAT_INTERNAL_URL = data.get("KOBOCAT_INTERNAL_URL", host)
+KOBOCAT_URL = data.get("KOBOCAT_URL", host)
+MONGO_DB_URL = data.get("MONGO_DB_URL", "mongodb://mongo-app:27017")
+KOBOFORM_INTERNAL_URL = data.get("KOBOFORM_INTERNAL_URL", host)
+KOBOFORM_URL = data.get("KOBOFORM_URL", host)
+ENKETO_URL = data.get("ENKETO_URL", host)
+ENKETO_INTERNAL_URL = data.get("ENKETO_INTERNAL_URL", host)
+SERVICE_ACCOUNT_WHITELISTED_HOSTS = data.get("SERVICE_ACCOUNT_WHITELISTED_HOSTS", host)
 EMAIL_BACKEND = data.get("EMAIL_BACKEND")
 EMAIL_HOST = data.get("EMAIL_HOST")
 EMAIL_PORT = data.get("EMAIL_PORT")
@@ -73,9 +89,9 @@ kpi = {
 agent.write_envfile("kpi.env", kpi)
 
 agent.write_envfile("kpi_worker.env", kpi)
-ENKETO_REDIS_MAIN_URL = data.get("ENKETO_REDIS_MAIN_URL")
-ENKETO_REDIS_CACHE_URL = data.get("ENKETO_REDIS_CACHE_URL")
-ENKETO_MAX_PROCESSES = data.get("ENKETO_MAX_PROCESSES")
+ENKETO_REDIS_MAIN_URL = data.get("ENKETO_REDIS_MAIN_URL", "redis://redis-app:6379")
+ENKETO_REDIS_CACHE_URL = data.get("ENKETO_REDIS_CACHE_URL", "redis://redis-app:6379")
+ENKETO_MAX_PROCESSES = data.get("ENKETO_MAX_PROCESSES", "1")
 ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL = data.get(
     "ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL"
 )
