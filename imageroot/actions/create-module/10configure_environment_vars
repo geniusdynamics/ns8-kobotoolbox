@@ -6,15 +6,17 @@
 #
 
 import json
-import sys
-import agent
 import os
+import sys
+
+import agent
 
 # Try to parse the stdin as JSON.
 # If parsing fails, output everything to stderr
 data = json.load(sys.stdin)
 
-#This is specific to you module, so you need to change it accordingly.
+# This is specific to you module, so you need to change it accordingly.
+
 
 def generate_random_password(length):
     # Generate random bytes and convert them to a hexadecimal string
@@ -22,20 +24,30 @@ def generate_random_password(length):
     password = random_bytes.hex()
     return password[:length]
 
-MARIADB_ROOT_PASSWORD= generate_random_password(16)
-MARIADB_DATABASE="kobotoolbox"
-MARIADB_USER="kobotoolbox"
-MARIADB_PASSWORD=generate_random_password(16)
-    # mariadb env
-mariadb_config = {
-    "MARIADB_ROOT_PASSWORD": MARIADB_ROOT_PASSWORD,
-    "MARIADB_DATABASE": MARIADB_DATABASE,
-    "MARIADB_USER": MARIADB_USER,
-    "MARIADB_PASSWORD": MARIADB_PASSWORD
+
+POSTGRES_DB = "kobotoolbox"
+POSTGRES_PASSWORD = generate_random_password(16)
+POSTGRES_USER = "kobotoolbox"
+postgres = {
+    "POSTGRES_DB": POSTGRES_DB,
+    "POSTGRES_PASSWORD": POSTGRES_PASSWORD,
+    "POSTGRES_USER": POSTGRES_USER,
 }
 
-agent.write_envfile("database.env", mariadb_config)
+agent.write_envfile("database.env", postgres)
+DATABASE_URL = (
+    f"postgis://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-app:5432/kobocat"
+)
+KC_DATABASE_URL = (
+    f"postgis://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-app:5432/kobotoolbox"
+)
+DJANGO_SECRET_KEY = generate_random_password(20)
 
-
+kpi_secret = {
+    "DJANGO_SECRET_KEY": DJANGO_SECRET_KEY,
+    "DATABASE_URL": DATABASE_URL,
+    "KC_DATABASE_URL": KC_DATABASE_URL,
+}
+agent.write_envfile("kpi-db.env", kpi_secret)
 # just before starting systemd unit
-#agent.dump_env()
+# agent.dump_env()
