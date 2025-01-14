@@ -24,4 +24,140 @@ config["lets_encrypt"] = os.getenv("TRAEFIK_LETS_ENCRYPT") == "True"
 
 # Dump the configuration to stdout
 # json.dump(config, fp=sys.stdout)
+if os.path.exists("postgres.env"): 
+	data = agent.read_envfile("postgres.env") 
+	config["POSTGRES_HOST_AUTH_METHOD"] = data.get("POSTGRES_HOST_AUTH_METHOD") 
+	config["POSTGRES_DB"] = data.get("POSTGRES_DB") 
+	config["POSTGRES_PASSWORD"] = data.get("POSTGRES_PASSWORD") 
+else: 
+	config["POSTGRES_HOST_AUTH_METHOD"] = "" 
+	config["POSTGRES_DB"] = "" 
+	config["POSTGRES_PASSWORD"] = "" 
+ 
+if os.path.exists("redis.env"): 
+	data = agent.read_envfile("redis.env") 
+else: 
+ 
+if os.path.exists("mongo.env"): 
+	data = agent.read_envfile("mongo.env") 
+else: 
+ 
+if os.path.exists("nginx.env"): 
+	data = agent.read_envfile("nginx.env") 
+else: 
+ 
+if os.path.exists("kpi.env"): 
+	data = agent.read_envfile("kpi.env") 
+	config["DJANGO_SECRET_KEY"] = data.get("DJANGO_SECRET_KEY") 
+	config["DJANGO_DEBUG"] = data.get("DJANGO_DEBUG") 
+	config["PYTHONUNBUFFERED"] = data.get("PYTHONUNBUFFERED") 
+	config["DATABASE_URL"] = data.get("DATABASE_URL") 
+	config["KC_DATABASE_URL"] = data.get("KC_DATABASE_URL") 
+	config["REDIS_SESSION_URL"] = data.get("REDIS_SESSION_URL") 
+	config["ENKETO_REDIS_MAIN_URL"] = data.get("ENKETO_REDIS_MAIN_URL") 
+	config["CELERY_BROKER_URL"] = data.get("CELERY_BROKER_URL") 
+	config["CACHE_URL"] = data.get("CACHE_URL") 
+	config["SERVICE_ACCOUNT_BACKEND_URL"] = data.get("SERVICE_ACCOUNT_BACKEND_URL") 
+	config["PUBLIC_REQUEST_SCHEME"] = data.get("PUBLIC_REQUEST_SCHEME") 
+	config["SESSION_COOKIE_DOMAIN"] = data.get("SESSION_COOKIE_DOMAIN") 
+	config["KOBOCAT_INTERNAL_URL"] = data.get("KOBOCAT_INTERNAL_URL") 
+	config["KOBOCAT_URL"] = data.get("KOBOCAT_URL") 
+	config["MONGO_DB_URL"] = data.get("MONGO_DB_URL") 
+	config["KOBOFORM_INTERNAL_URL"] = data.get("KOBOFORM_INTERNAL_URL") 
+	config["KOBOFORM_URL"] = data.get("KOBOFORM_URL") 
+	config["ENKETO_URL"] = data.get("ENKETO_URL") 
+	config["ENKETO_INTERNAL_URL"] = data.get("ENKETO_INTERNAL_URL") 
+	config["SERVICE_ACCOUNT_WHITELISTED_HOSTS"] = data.get("SERVICE_ACCOUNT_WHITELISTED_HOSTS") 
+	config["EMAIL_BACKEND"] = data.get("EMAIL_BACKEND") 
+	config["EMAIL_HOST"] = data.get("EMAIL_HOST") 
+	config["EMAIL_PORT"] = data.get("EMAIL_PORT") 
+else: 
+	config["DJANGO_SECRET_KEY"] = "" 
+	config["DJANGO_DEBUG"] = "" 
+	config["PYTHONUNBUFFERED"] = "" 
+	config["DATABASE_URL"] = "" 
+	config["KC_DATABASE_URL"] = "" 
+	config["REDIS_SESSION_URL"] = "" 
+	config["ENKETO_REDIS_MAIN_URL"] = "" 
+	config["CELERY_BROKER_URL"] = "" 
+	config["CACHE_URL"] = "" 
+	config["SERVICE_ACCOUNT_BACKEND_URL"] = "" 
+	config["PUBLIC_REQUEST_SCHEME"] = "" 
+	config["SESSION_COOKIE_DOMAIN"] = "" 
+	config["KOBOCAT_INTERNAL_URL"] = "" 
+	config["KOBOCAT_URL"] = "" 
+	config["MONGO_DB_URL"] = "" 
+	config["KOBOFORM_INTERNAL_URL"] = "" 
+	config["KOBOFORM_URL"] = "" 
+	config["ENKETO_URL"] = "" 
+	config["ENKETO_INTERNAL_URL"] = "" 
+	config["SERVICE_ACCOUNT_WHITELISTED_HOSTS"] = "" 
+	config["EMAIL_BACKEND"] = "" 
+	config["EMAIL_HOST"] = "" 
+	config["EMAIL_PORT"] = "" 
+ 
+if os.path.exists("kpi_worker.env"): 
+	data = agent.read_envfile("kpi_worker.env") 
+	config["DJANGO_SECRET_KEY"] = data.get("DJANGO_SECRET_KEY") 
+	config["DJANGO_DEBUG"] = data.get("DJANGO_DEBUG") 
+	config["PYTHONUNBUFFERED"] = data.get("PYTHONUNBUFFERED") 
+	config["DATABASE_URL"] = data.get("DATABASE_URL") 
+	config["KC_DATABASE_URL"] = data.get("KC_DATABASE_URL") 
+	config["REDIS_SESSION_URL"] = data.get("REDIS_SESSION_URL") 
+	config["ENKETO_REDIS_MAIN_URL"] = data.get("ENKETO_REDIS_MAIN_URL") 
+	config["CELERY_BROKER_URL"] = data.get("CELERY_BROKER_URL") 
+	config["CACHE_URL"] = data.get("CACHE_URL") 
+	config["SERVICE_ACCOUNT_BACKEND_URL"] = data.get("SERVICE_ACCOUNT_BACKEND_URL") 
+	config["PUBLIC_REQUEST_SCHEME"] = data.get("PUBLIC_REQUEST_SCHEME") 
+	config["SESSION_COOKIE_DOMAIN"] = data.get("SESSION_COOKIE_DOMAIN") 
+	config["KOBOCAT_INTERNAL_URL"] = data.get("KOBOCAT_INTERNAL_URL") 
+	config["KOBOCAT_URL"] = data.get("KOBOCAT_URL") 
+	config["MONGO_DB_URL"] = data.get("MONGO_DB_URL") 
+	config["KOBOFORM_INTERNAL_URL"] = data.get("KOBOFORM_INTERNAL_URL") 
+	config["KOBOFORM_URL"] = data.get("KOBOFORM_URL") 
+	config["ENKETO_URL"] = data.get("ENKETO_URL") 
+	config["ENKETO_INTERNAL_URL"] = data.get("ENKETO_INTERNAL_URL") 
+	config["SERVICE_ACCOUNT_WHITELISTED_HOSTS"] = data.get("SERVICE_ACCOUNT_WHITELISTED_HOSTS") 
+	config["EMAIL_BACKEND"] = data.get("EMAIL_BACKEND") 
+	config["EMAIL_HOST"] = data.get("EMAIL_HOST") 
+	config["EMAIL_PORT"] = data.get("EMAIL_PORT") 
+else: 
+	config["DJANGO_SECRET_KEY"] = "" 
+	config["DJANGO_DEBUG"] = "" 
+	config["PYTHONUNBUFFERED"] = "" 
+	config["DATABASE_URL"] = "" 
+	config["KC_DATABASE_URL"] = "" 
+	config["REDIS_SESSION_URL"] = "" 
+	config["ENKETO_REDIS_MAIN_URL"] = "" 
+	config["CELERY_BROKER_URL"] = "" 
+	config["CACHE_URL"] = "" 
+	config["SERVICE_ACCOUNT_BACKEND_URL"] = "" 
+	config["PUBLIC_REQUEST_SCHEME"] = "" 
+	config["SESSION_COOKIE_DOMAIN"] = "" 
+	config["KOBOCAT_INTERNAL_URL"] = "" 
+	config["KOBOCAT_URL"] = "" 
+	config["MONGO_DB_URL"] = "" 
+	config["KOBOFORM_INTERNAL_URL"] = "" 
+	config["KOBOFORM_URL"] = "" 
+	config["ENKETO_URL"] = "" 
+	config["ENKETO_INTERNAL_URL"] = "" 
+	config["SERVICE_ACCOUNT_WHITELISTED_HOSTS"] = "" 
+	config["EMAIL_BACKEND"] = "" 
+	config["EMAIL_HOST"] = "" 
+	config["EMAIL_PORT"] = "" 
+ 
+if os.path.exists("enketo_express.env"): 
+	data = agent.read_envfile("enketo_express.env") 
+	config["ENKETO_REDIS_MAIN_URL"] = data.get("ENKETO_REDIS_MAIN_URL") 
+	config["ENKETO_REDIS_CACHE_URL"] = data.get("ENKETO_REDIS_CACHE_URL") 
+	config["ENKETO_MAX_PROCESSES"] = data.get("ENKETO_MAX_PROCESSES") 
+	config["ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL"] = data.get("ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL") 
+	config["ENKETO_LINKED_FORM_AND_DATA_SERVER_AUTHENTICATION_ALLOW_INSECURE_TRANSPORT"] = data.get("ENKETO_LINKED_FORM_AND_DATA_SERVER_AUTHENTICATION_ALLOW_INSECURE_TRANSPORT") 
+else: 
+	config["ENKETO_REDIS_MAIN_URL"] = "" 
+	config["ENKETO_REDIS_CACHE_URL"] = "" 
+	config["ENKETO_MAX_PROCESSES"] = "" 
+	config["ENKETO_LINKED_FORM_AND_DATA_SERVER_SERVER_URL"] = "" 
+	config["ENKETO_LINKED_FORM_AND_DATA_SERVER_AUTHENTICATION_ALLOW_INSECURE_TRANSPORT"] = "" 
+ 
 json.dump(config, fp=sys.stdout)

@@ -1,0 +1,30 @@
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+[Unit]
+Description=Podman  kpi-app.service
+BindsTo=kobotoolbox.service
+After=kobotoolbox.service postgres-app.service redis-app.service mongo-app.service nginx-app.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/environment
+EnvironmentFile=-%S/state/smarthost.env
+WorkingDirectory=%S/state
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/mkdir -p tmp
+ExecStartPre=/bin/rm -f %t/kpi-app.pid %t/kpi-app.ctr-id
+ExecStartPre=-runagent discover-smarthost
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/kpi-app.pid  --cidfile %t/kpi-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  kpi-app  --volume ./kpi:/srv/src/kpi --volume ./.vols/kobocat_media_uploads:/srv/src/kobocat/media   --env kpi.env  ${KPI_IMAGE}  
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/kpi-app.ctr-id -t 10
+ExecReload=/usr/bin/podman kill -s HUP kpi-app
+SyslogIdentifier=%u
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/kpi-app.ctr-id
+PIDFile=%t/kpi-app.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

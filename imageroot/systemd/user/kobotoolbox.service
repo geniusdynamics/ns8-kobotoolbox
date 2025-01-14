@@ -10,8 +10,8 @@
 
 [Unit]
 Description=Podman kobotoolbox.service
-Requires=
-Before=
+Requires=postgis-app.service valkey-app.service mongo-app.service nginx-app.service kpi-app.service kpi-app.service enketo-express-extra-widgets-app.service 
+Before=postgis-app.service valkey-app.service mongo-app.service nginx-app.service kpi-app.service kpi-app.service enketo-express-extra-widgets-app.service 
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
