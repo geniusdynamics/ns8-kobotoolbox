@@ -6,7 +6,7 @@
 [Unit]
 Description=Podman  kpi_worker-app.service
 BindsTo=kobotoolbox.service
-After=kobotoolbox.service postgres-app.service redis-app.service mongo-app.service nginx-app.service
+After=kobotoolbox.service postgres-app.service redis-app.service mongo-app.service nginx-app.service kpi-app.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
