@@ -46,6 +46,8 @@ You can retrieve the configuration with
 ```
 api-cli run get-configuration --agent module/kobotoolbox1
 ```
+## update
+
 
 ## Uninstall
 
