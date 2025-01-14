@@ -18,7 +18,7 @@ TimeoutStopSec=70
 ExecStartPre=/bin/mkdir -p tmp
 ExecStartPre=/bin/rm -f %t/kpi-app.pid %t/kpi-app.ctr-id
 ExecStartPre=-runagent discover-smarthost
-ExecStart=/usr/bin/podman run --conmon-pidfile %t/kpi-app.pid  --cidfile %t/kpi-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  kpi-app  --volume kpi:/srv/src/kpi --volume kobocat_media_uploads:/srv/src/kobocat/media   --env-file kpi.env --env-file kpi-db.env  ${KPI_IMAGE}  
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/kpi-app.pid  --cidfile %t/kpi-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  kpi-app  --volume kpi:/srv/src/kpi --volume kobocat_media_uploads:/srv/src/kobocat/media --volume %S/bin/scripts/wait_for_mongo.bash:/srv/init/wait_for_mongo.bash --volume %S/bin/scripts/wait_for_postgres.bash:/srv/init/wait_for_postgres.bash   --env-file kpi.env --env-file kpi-db.env  ${KPI_IMAGE}  
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/kpi-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP kpi-app
 SyslogIdentifier=%u
