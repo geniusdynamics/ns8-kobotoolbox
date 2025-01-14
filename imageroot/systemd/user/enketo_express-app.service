@@ -18,7 +18,7 @@ TimeoutStopSec=70
 ExecStartPre=/bin/mkdir -p tmp
 ExecStartPre=/bin/rm -f %t/enketo_express-app.pid %t/enketo_express-app.ctr-id
 ExecStartPre=-runagent discover-smarthost
-ExecStart=/usr/bin/podman run --conmon-pidfile %t/enketo_express-app.pid  --cidfile %t/enketo_express-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  enketo_express-app     --env enketo_express.env  ${ENKETO-EXPRESS-EXTRA-WIDGETS_IMAGE}  
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/enketo_express-app.pid  --cidfile %t/enketo_express-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  enketo_express-app     --env-file enketo_express.env  ${ENKETO_EXPRESS_EXTRA_WIDGETS_IMAGE}  
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/enketo_express-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP enketo_express-app
 SyslogIdentifier=%u

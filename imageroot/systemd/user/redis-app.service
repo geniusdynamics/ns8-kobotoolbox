@@ -18,7 +18,7 @@ TimeoutStopSec=70
 ExecStartPre=/bin/mkdir -p tmp
 ExecStartPre=/bin/rm -f %t/redis-app.pid %t/redis-app.ctr-id
 ExecStartPre=-runagent discover-smarthost
-ExecStart=/usr/bin/podman run --conmon-pidfile %t/redis-app.pid  --cidfile %t/redis-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  redis-app     --env redis.env  ${VALKEY_IMAGE}  
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/redis-app.pid  --cidfile %t/redis-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  redis-app     --env-file redis.env  ${VALKEY_IMAGE}  
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/redis-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP redis-app
 SyslogIdentifier=%u
