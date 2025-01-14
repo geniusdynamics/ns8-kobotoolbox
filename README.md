@@ -47,8 +47,9 @@ You can retrieve the configuration with
 api-cli run get-configuration --agent module/kobotoolbox1
 ```
 ## update
-
-
+```shell
+api-cli run update-module --data '{"module_url":"ghcr.io/geniusdynamics/kobotoolbox:latest","instances":["kobotoolbox1"],"force":true}'
+```
 ## Uninstall
 
 To uninstall the instance:
