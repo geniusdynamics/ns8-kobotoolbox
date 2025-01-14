@@ -24,11 +24,12 @@ def parse_url(url):
     return protocol, dynamic_domain
 
 
+# If parsing fails, output everything to stderr
+data = json.load(sys.stdin)
 host = data.get("host")
 protocol, dynamic_domain = parse_url(host)
 # Try to parse the stdin as JSON.
-# If parsing fails, output everything to stderr
-data = json.load(sys.stdin)
+
 
 # This is specific to you module, so you need to change it accordingly.
 # agent.dump_env()
