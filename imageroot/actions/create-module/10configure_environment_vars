@@ -36,10 +36,10 @@ postgres = {
 
 agent.write_envfile("database.env", postgres)
 DATABASE_URL = (
-    f"postgis://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-app:5432/kobocat"
+    f"postgis://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres-app:5432/kobocat"
 )
 KC_DATABASE_URL = (
-    f"postgis://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-app:5432/kobotoolbox"
+    f"postgis://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres-app:5432/kobotoolbox"
 )
 DJANGO_SECRET_KEY = generate_random_password(20)
 
