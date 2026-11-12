@@ -10,14 +10,12 @@ After=kobotoolbox.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
-EnvironmentFile=-%S/state/smarthost.env
-WorkingDirectory=%S/state
+EnvironmentFile=%E/state/environment
+WorkingDirectory=%E/state
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/mkdir -p tmp
 ExecStartPre=/bin/rm -f %t/nginx-app.pid %t/nginx-app.ctr-id
-ExecStartPre=-runagent discover-smarthost
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/nginx-app.pid  --cidfile %t/nginx-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  nginx-app  --volume %S/bin/nginx.conf:/etc/nginx/nginx.conf --volume kobocat_media_uploads:/media --volume kpi_media:/srv/kpi_media/__public   --env-file nginx.env  ${NGINX_IMAGE}  
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/nginx-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP nginx-app
