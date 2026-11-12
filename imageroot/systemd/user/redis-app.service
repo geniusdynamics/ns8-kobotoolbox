@@ -10,14 +10,12 @@ After=kobotoolbox.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/environment
-EnvironmentFile=-%S/state/smarthost.env
-WorkingDirectory=%S/state
+EnvironmentFile=%E/state/environment
+WorkingDirectory=%E/state
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/mkdir -p tmp
 ExecStartPre=/bin/rm -f %t/redis-app.pid %t/redis-app.ctr-id
-ExecStartPre=-runagent discover-smarthost
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/redis-app.pid  --cidfile %t/redis-app.ctr-id --cgroups=no-conmon  --pod-id-file %t/kobotoolbox.pod-id --replace -d --name  redis-app     --env-file redis.env  ${VALKEY_IMAGE}  
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/redis-app.ctr-id -t 10
 ExecReload=/usr/bin/podman kill -s HUP redis-app
