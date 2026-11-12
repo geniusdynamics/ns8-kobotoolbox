@@ -15,7 +15,7 @@ Before=postgres-app.service redis-app.service mongo-app.service nginx-app.servic
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=-%S/state/environment
+EnvironmentFile=-%E/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/kobotoolbox.pid %t/kobotoolbox.pod-id
