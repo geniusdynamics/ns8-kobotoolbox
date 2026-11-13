@@ -1,148 +1,122 @@
 # ns8-kobotoolbox
 
-This is a template module for [NethServer 8](https://github.com/NethServer/ns8-core).
-To start a new module from it:
+Open source tool to design forms and collect data in the field, with offline collection and data export.
+
+Module id: `kobotoolbox`. Images are pinned in `build-images.sh` and updated through reviewed changes.
 
 ## Install
 
-Instantiate the module with:
+```bash
+add-module ghcr.io/geniusdynamics/kobotoolbox:latest 1
+```
 
-    add-module ghcr.io/geniusdynamics/kobotoolbox:latest 1
-
-The output of the command will return the instance name.
-Output example:
-
-    {"module_id": "kobotoolbox1", "image_name": "kobotoolbox", "image_url": "ghcr.io/geniusdynamics/kobotoolbox:latest"}
+The command returns the instance id, for example `kobotoolbox1`. Use the id NS8 returns.
 
 ## Configure
 
-Let's assume that the mattermost instance is named `kobotoolbox1`.
-
-Launch `configure-module`, by setting the following parameters:
-- `host`: a fully qualified domain name for the application
-- `http2https`: enable or disable HTTP to HTTPS redirection (true/false)
-- `lets_encrypt`: enable or disable Let's Encrypt certificate (true/false)
-
-
-Example:
-
-```
-api-cli run configure-module --agent module/kobotoolbox1 --data - <<EOF
+```bash
+api-cli run configure-module --agent module/kobotoolbox1 --data - <<'EOF'
 {
-  "host": "kobotoolbox.domain.com",
+  "host": "kobotoolbox.example.org",
   "http2https": true,
   "lets_encrypt": false
 }
 EOF
 ```
 
-The above command will:
-- start and configure the kobotoolbox instance
-- configure a virtual host for trafik to access the instance
+| Parameter | Required | Type | Description |
+|---|---|---|---|
+| `host` | yes | string | Host name for the application, like 'kobotoolbox.domain.org' |
+| `lets_encrypt` | yes | boolean | Request a valid Let's Encrypt certificate. |
+| `http2https` | yes | boolean | Redirect all the HTTP requests to HTTPS |
+
+## Configuration output
+
+`get-configuration` returns: `host`, `lets_encrypt`, `http2https`.
+
+## Images
+
+| Image | Version |
+|---|---|
+| `docker.io/postgis/postgis` | `17-3.7` |
+| `docker.io/valkey/valkey` | `9.2` |
+| `docker.io/mongo` | `9.0.8` |
+| `docker.io/nginx` | `1.31.8-alpine3.24` |
+| `docker.io/kobotoolbox/kpi` | `2.026.37g` |
+| `docker.io/kobotoolbox/enketo-express-extra-widgets` | `7.6.5` |
+
+## Network and access
+
+- Reserves 1 TCP port(s) on the node. The web application is published through Traefik on the configured host name.
+- Runs rootless.
+- Declares these NS8 authorizations: `traefik@node:routeadm`.
+
+## Backup
+
+The following paths are included in the NS8 backup (`imageroot/etc/state-include.conf`):
+
+- `state/postgres.env`
+- `volumes/./initdb.sql`
+- `state/redis.env`
+- `state/mongo.env`
+- `state/nginx.env`
+- `volumes/./nginx.conf`
+- `volumes/./.vols/kobocat_media_uploads`
+- `volumes/./.vols/kpi_media/__public`
+- `state/kpi.env`
+- `volumes/./kpi`
+- `volumes/./.vols/kobocat_media_uploads`
+- `state/kpi_worker.env`
+- `volumes/./kpi`
+- `state/enketo_express.env`
+
+## Services
+
+- `enketo_express-app.service`
+- `kobotoolbox.service`
+- `kpi-app.service`
+- `kpi_worker-app.service`
+- `mongo-app.service`
+- `nginx-app.service`
+- `postgres-app.service`
+- `redis-app.service`
 
 ## Get the configuration
-You can retrieve the configuration with
 
-```
+```bash
 api-cli run get-configuration --agent module/kobotoolbox1
 ```
-## update
-```shell
+
+## Update and uninstall
+
+```bash
 api-cli run update-module --data '{"module_url":"ghcr.io/geniusdynamics/kobotoolbox:latest","instances":["kobotoolbox1"],"force":true}'
-```
-## Uninstall
-
-To uninstall the instance:
-
-    remove-module --no-preserve kobotoolbox1
-
-## Smarthost setting discovery
-
-Some configuration settings, like the smarthost setup, are not part of the
-`configure-module` action input: they are discovered by looking at some
-Redis keys.  To ensure the module is always up-to-date with the
-centralized [smarthost
-setup](https://nethserver.github.io/ns8-core/core/smarthost/) every time
-kobotoolbox starts, the command `bin/discover-smarthost` runs and refreshes
-the `state/smarthost.env` file with fresh values from Redis.
-
-Furthermore if smarthost setup is changed when kobotoolbox is already
-running, the event handler `events/smarthost-changed/10reload_services`
-restarts the main module service.
-
-See also the `systemd/user/kobotoolbox.service` file.
-
-This setting discovery is just an example to understand how the module is
-expected to work: it can be rewritten or discarded completely.
-
-## Debug
-
-some CLI are needed to debug
-
-- The module runs under an agent that initiate a lot of environment variables (in /home/kobotoolbox1/.config/state), it could be nice to verify them
-on the root terminal
-
-    `runagent -m kobotoolbox1 env`
-
-- you can become runagent for testing scripts and initiate all environment variables
-  
-    `runagent -m kobotoolbox1`
-
- the path become : 
-```
-    echo $PATH
-    /home/kobotoolbox1/.config/bin:/usr/local/agent/pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/
+remove-module --no-preserve kobotoolbox1
 ```
 
-- if you want to debug a container or see environment inside
- `runagent -m kobotoolbox1`
- ```
-podman ps
-CONTAINER ID  IMAGE                                      COMMAND               CREATED        STATUS        PORTS                    NAMES
-d292c6ff28e9  localhost/podman-pause:4.6.1-1702418000                          9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  80b8de25945f-infra
-d8df02bf6f4a  docker.io/library/mariadb:10.11.5          --character-set-s...  9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  mariadb-app
-9e58e5bd676f  docker.io/library/nginx:stable-alpine3.17  nginx -g daemon o...  9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  kobotoolbox-app
-```
-
-you can see what environment variable is inside the container
-```
-podman exec  kobotoolbox-app env
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-TERM=xterm
-PKG_RELEASE=1
-MARIADB_DB_HOST=127.0.0.1
-MARIADB_DB_NAME=kobotoolbox
-MARIADB_IMAGE=docker.io/mariadb:10.11.5
-MARIADB_DB_TYPE=mysql
-container=podman
-NGINX_VERSION=1.24.0
-NJS_VERSION=0.7.12
-MARIADB_DB_USER=kobotoolbox
-MARIADB_DB_PASSWORD=kobotoolbox
-MARIADB_DB_PORT=3306
-HOME=/root
-```
-
-you can run a shell inside the container
-
-```
-podman exec -ti   kobotoolbox-app sh
-/ # 
-```
 ## Testing
 
-Test the module using the `test-module.sh` script:
+Continuous integration:
 
+- `Publish images` builds the module image on every push.
+- `Test module` installs the image on a QEMU NS8 node and runs the Robot Framework suite in `tests/`. It runs after `Publish images` succeeds on `dev` and on `main`.
+- `Build API JSON Schema docs` and the security scan run alongside.
 
-    ./test-module.sh <NODE_ADDR> ghcr.io/nethserver/kobotoolbox:latest
+The suite installs the module, configures a host name, checks that the web application answers through Traefik, takes UI screenshots and removes the module.
 
-The tests are made using [Robot Framework](https://robotframework.org/)
+Run it locally with the NS8 standard infrastructure described in the [ns8-github-actions README](https://github.com/NethServer/ns8-github-actions/blob/v1/README.md#running-tests-locally).
 
-## UI translation
+## Open items
 
-Translated with [Weblate](https://hosted.weblate.org/projects/ns8/).
+Found by the NS8 module standards check. These must be resolved before a stable release:
 
-To setup the translation process:
+- README still has the template boilerplate
+- MARIADB_IMAGE is used by the module but no image in the label provides it: leftover from the template?
 
-- add [GitHub Weblate app](https://docs.weblate.org/en/latest/admin/continuous.html#github-setup) to your repository
-- add your repository to [hosted.weblate.org]((https://hosted.weblate.org) or ask a NethServer developer to add it to ns8 Weblate project
+## Upstream
+
+Application documentation: https://support.kobotoolbox.org/
+
+## License
+
+GPL-3.0-or-later. See [LICENSE](LICENSE).
