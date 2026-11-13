@@ -48,6 +48,7 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@node:routeadm" \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
+    --label="org.nethserver.min-core=3.0.0" \
     --label="org.nethserver.images=docker.io/postgis/postgis:17-3.7 docker.io/valkey/valkey:9.2 docker.io/mongo:9.0.8 docker.io/nginx:1.31.8-alpine3.24 docker.io/kobotoolbox/kpi:2.026.37g docker.io/kobotoolbox/enketo-express-extra-widgets:7.6.5" \
     "${container}"
 # Commit the image
