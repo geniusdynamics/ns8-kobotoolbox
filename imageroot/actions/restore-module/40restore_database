@@ -1,41 +1,58 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2022 Nethesis S.r.l.
+# Copyright (C) 2026 Genius Dynamics
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 set -e -o pipefail
 exec 1>&2 # Redirect any output to the journal (stderr)
 
-# Prepare an initialization script that restores the dump file
-mkdir -vp initdb.d
-mv -v kobotoolbox.sql initdb.d
-#do the bash file to restore and exit once done
-cat - >initdb.d/zz_kobotoolbox_restore.sh <<'EOS'
-# Print additional information:
-mysql --version
-# The script is sourced, override entrypoint args and exit:
-set -- true
+# The backup holds secrets.env: restore the database with the same password
+KOBO_DB_PASSWORD=$(grep -m1 '^KOBO_DB_PASSWORD=' secrets.env | cut -d= -f2-)
+test -n "${KOBO_DB_PASSWORD}"
+
+#
+# PostgreSQL: the image initializes the kobotoolbox database, then runs
+# the restore script and stops
+#
+mkdir -vp restore
+cat - >restore/zz_kobotoolbox_restore.sh <<'EOS'
+psql -U kobo -d postgres -c 'CREATE DATABASE kobocat OWNER kobo'
+# The PostGIS image already created some extensions: pg_restore reports
+# them as errors, and goes on
+pg_restore --no-owner --no-privileges -U kobo -d kobotoolbox /dumps/kobotoolbox.pg_dump
+pg_restore --no-owner --no-privileges -U kobo -d kobocat /dumps/kobocat.pg_dump
 docker_temp_server_stop
 exit 0
 EOS
+trap 'rm -rfv restore/' EXIT
 
-# once we exit we remove initdb.d
-trap 'rm -rfv initdb.d/' EXIT
-
-# we start a container to initiate a database and load the dump
-# at the end of kobotoolbox_restore.sh the dump is loaded and 
-# we exit the container
 podman run \
-  --rm \
-  --interactive \
-  --network=none \
-  --volume=./initdb.d:/docker-entrypoint-initdb.d:z \
-  --volume mysql-data:/var/lib/mysql/:Z \
-  --env MARIADB_ROOT_PASSWORD=Nethesis,1234 \
-  --env MARIADB_DATABASE=kobotoolbox \
-  --env MARIADB_USER=kobotoolbox \
-  --env MARIADB_PASSWORD=kobotoolbox \
-  --replace --name=restore_db \
-  ${MARIADB_IMAGE}
+    --rm \
+    --network=none \
+    --volume=./restore:/docker-entrypoint-initdb.d/:Z \
+    --volume=./kobotoolbox.pg_dump:/dumps/kobotoolbox.pg_dump:ro,Z \
+    --volume=./kobocat.pg_dump:/dumps/kobocat.pg_dump:ro,Z \
+    --volume=postgres-data:/var/lib/postgresql/data:Z \
+    --replace --name=restore_db \
+    --env=POSTGRES_DB=kobotoolbox \
+    --env=POSTGRES_USER=kobo \
+    --env=POSTGRES_PASSWORD="${KOBO_DB_PASSWORD}" \
+    "${POSTGIS_IMAGE}"
+
+#
+# MongoDB: start a temporary server and load the archive from stdin
+#
+podman run \
+    --rm \
+    --interactive \
+    --network=none \
+    --volume=mongo-data:/data/db:Z \
+    --replace --name=restore_mongo \
+    --entrypoint=/bin/bash \
+    "${MONGO_IMAGE}" \
+    -c 'mongod --fork --logpath /tmp/mongod.log --bind_ip 127.0.0.1 && mongorestore --quiet --archive --drop; ec=$?; mongod --shutdown; exit $ec' \
+    < formhub.mongo_archive
+
+rm -vf kobotoolbox.pg_dump kobocat.pg_dump formhub.mongo_archive
