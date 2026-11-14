@@ -1,21 +1,14 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2022 Nethesis S.r.l.
+# Copyright (C) 2026 Genius Dynamics
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-set -e
+# Runs in the state directory before the backup
+set -e -o pipefail
 
-if ! systemctl --user -q is-active kobotoolbox.service; then
-    exit 0
-fi
-
-podman exec mariadb-app mysqldump \
-        --databases kobotoolbox \
-        --default-character-set=utf8mb4 \
-        --skip-dump-date \
-        --ignore-table=mysql.event \
-        --single-transaction \
-        --quick \
-        --add-drop-table  > kobotoolbox.sql
+echo "Dumping the KoboToolbox databases"
+podman exec postgres-app pg_dump -U kobo --format=c kobotoolbox > kobotoolbox.pg_dump
+podman exec postgres-app pg_dump -U kobo --format=c kobocat > kobocat.pg_dump
+podman exec mongo-app mongodump --quiet --archive --db=formhub > formhub.mongo_archive

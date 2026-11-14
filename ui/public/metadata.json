@@ -2,7 +2,7 @@
   "name": "kobotoolbox",
   "description": {
     "en": "Open source tool to design forms and collect data in the field, with offline collection and data export.",
-    "it": "Strumento open source per creare moduli e raccogliere dati sul campo, anche offline, ed esportarli."
+    "it": "KoboToolbox raccoglie dati sul campo con moduli e sondaggi, anche offline."
   },
   "categories": [
     "office"

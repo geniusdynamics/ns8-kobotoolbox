@@ -17,6 +17,18 @@ reponame="kobotoolbox"
 # Node.js 25+ no longer ships Corepack, install it from npm
 # renovate: datasource=npm packageName=corepack
 corepack_version=0.36.0
+# renovate: datasource=docker packageName=docker.io/kobotoolbox/kpi
+KPI_VERSION=2.026.37g
+# renovate: datasource=docker packageName=docker.io/kobotoolbox/enketo-express-extra-widgets
+ENKETO_VERSION=7.6.5
+# renovate: datasource=docker packageName=docker.io/postgis/postgis
+POSTGIS_VERSION=17-3.7
+# renovate: datasource=docker packageName=docker.io/library/mongo
+MONGO_VERSION=8.0.38
+# renovate: datasource=docker packageName=docker.io/valkey/valkey
+VALKEY_VERSION=9.1.3-alpine3.24
+# renovate: datasource=docker packageName=docker.io/library/nginx
+NGINX_VERSION=1.31.8-alpine3.24
 
 # Create a new empty container image
 container=$(buildah from scratch)
@@ -48,7 +60,8 @@ buildah config --entrypoint=/ \
     --label="org.nethserver.authorizations=traefik@node:routeadm" \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
-    --label="org.nethserver.images=docker.io/postgis/postgis:17-3.7 docker.io/valkey/valkey:8.1.11 docker.io/mongo:8.0.38 docker.io/nginx:1.31.8-alpine docker.io/kobotoolbox/kpi:2.024.36a docker.io/kobotoolbox/enketo-express-extra-widgets:7.3.1" \
+    --label="org.nethserver.min-core=3.0.0" \
+    --label="org.nethserver.images=docker.io/postgis/postgis:${POSTGIS_VERSION} docker.io/valkey/valkey:${VALKEY_VERSION} docker.io/mongo:${MONGO_VERSION} docker.io/nginx:${NGINX_VERSION} docker.io/kobotoolbox/kpi:${KPI_VERSION} docker.io/kobotoolbox/enketo-express-extra-widgets:${ENKETO_VERSION}" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"

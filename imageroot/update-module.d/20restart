@@ -5,11 +5,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# If the control reaches this step, the service can be enabled and started
-
 set -e
 
 # Redirect any output to the journal (stderr)
 exec 1>&2
 
-systemctl --user try-restart kobotoolbox.service
+systemctl --user try-restart kobotoolbox.service postgres-app.service mongo-app.service redis-app.service \
+    kpi-app.service kpi_worker-app.service enketo_express-app.service nginx-app.service

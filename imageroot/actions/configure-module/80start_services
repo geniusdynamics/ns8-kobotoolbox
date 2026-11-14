@@ -9,8 +9,10 @@ set -e
 # Redirect any output to the journal (stderr)
 exec 1>&2
 
-# If the control reaches this step, the service can be enabled and started
-
-
+# If the control reaches this step, the service can be enabled and started.
+# List every unit: restarting the pod alone does not restart its containers.
+# kpi-app reports started only when uWSGI listens, so on the first run this
+# waits for the database migrations.
 systemctl --user enable kobotoolbox.service
-systemctl --user restart kobotoolbox.service
+systemctl --user restart kobotoolbox.service postgres-app.service mongo-app.service redis-app.service \
+    kpi-app.service kpi_worker-app.service enketo_express-app.service nginx-app.service
