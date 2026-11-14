@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2022 Nethesis S.r.l.
+# Copyright (C) 2026 Genius Dynamics
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
@@ -10,8 +10,8 @@
 
 [Unit]
 Description=Podman kobotoolbox.service
-Requires=postgres-app.service redis-app.service mongo-app.service nginx-app.service kpi-app.service kpi_worker-app.service enketo_express-app.service 
-Before=postgres-app.service redis-app.service mongo-app.service nginx-app.service kpi-app.service kpi_worker-app.service  enketo_express--app.service 
+Requires=postgres-app.service mongo-app.service redis-app.service kpi-app.service kpi_worker-app.service enketo_express-app.service nginx-app.service
+Before=postgres-app.service mongo-app.service redis-app.service kpi-app.service kpi_worker-app.service enketo_express-app.service nginx-app.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -19,7 +19,11 @@ EnvironmentFile=-%E/state/environment
 Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/kobotoolbox.pid %t/kobotoolbox.pod-id
-ExecStartPre=/usr/bin/podman pod create --infra-conmon-pidfile %t/kobotoolbox.pid  --pod-id-file %t/kobotoolbox.pod-id  --name kobotoolbox  --publish 127.0.0.1:${TCP_PORT}:8080  --replace
+ExecStartPre=/usr/bin/podman pod create --infra-conmon-pidfile %t/kobotoolbox.pid \
+    --pod-id-file %t/kobotoolbox.pod-id \
+    --name kobotoolbox \
+    --publish 127.0.0.1:${TCP_PORT}:8080 \
+    --replace
 ExecStart=/usr/bin/podman pod start --pod-id-file %t/kobotoolbox.pod-id
 ExecStop=/usr/bin/podman pod stop --ignore --pod-id-file %t/kobotoolbox.pod-id -t 10
 ExecStopPost=/usr/bin/podman pod rm --ignore -f --pod-id-file %t/kobotoolbox.pod-id
