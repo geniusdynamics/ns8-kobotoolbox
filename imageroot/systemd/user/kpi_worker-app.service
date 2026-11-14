@@ -6,6 +6,8 @@
 Description=Podman kpi_worker-app.service
 BindsTo=kobotoolbox.service
 After=kobotoolbox.service postgres-app.service mongo-app.service redis-app.service kpi-app.service
+# Celery needs the schema that kpi-app migrates
+Requires=kpi-app.service
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n

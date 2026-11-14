@@ -39,11 +39,15 @@ EOF
 | Image | Version |
 |---|---|
 | `docker.io/postgis/postgis` | `17-3.7` |
-| `docker.io/valkey/valkey` | `9.2` |
-| `docker.io/mongo` | `9.0.8` |
+| `docker.io/valkey/valkey` | `9.1.3-alpine3.24` |
+| `docker.io/mongo` | `8.0.38` |
 | `docker.io/nginx` | `1.31.8-alpine3.24` |
 | `docker.io/kobotoolbox/kpi` | `2.026.37g` |
 | `docker.io/kobotoolbox/enketo-express-extra-widgets` | `7.6.5` |
+
+The pod follows kobo-docker on a single host name: nginx (port 8080) serves KPI on
+`/` and Enketo Express on `/enketo/`. The KoboCAT endpoints are served by KPI on the
+same host. The `admin` password is in `state/secrets.env`.
 
 ## Network and access
 
@@ -55,20 +59,10 @@ EOF
 
 The following paths are included in the NS8 backup (`imageroot/etc/state-include.conf`):
 
-- `state/postgres.env`
-- `volumes/./initdb.sql`
-- `state/redis.env`
-- `state/mongo.env`
-- `state/nginx.env`
-- `volumes/./nginx.conf`
-- `volumes/./.vols/kobocat_media_uploads`
-- `volumes/./.vols/kpi_media/__public`
-- `state/kpi.env`
-- `volumes/./kpi`
-- `volumes/./.vols/kobocat_media_uploads`
-- `state/kpi_worker.env`
-- `volumes/./kpi`
-- `state/enketo_express.env`
+- `state/secrets.env`
+- `state/kobotoolbox.pg_dump`, `state/kobocat.pg_dump`, `state/formhub.mongo_archive`
+- `volumes/kpi-media`
+- `volumes/kobocat-media`
 
 ## Services
 

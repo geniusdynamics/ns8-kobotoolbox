@@ -40,7 +40,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/kpi-app.pid \
     --volume=static-files:/srv/static:z \
     --volume=%E/bin/kpi-init:/srv/init:ro,Z \
     ${KPI_IMAGE} \
-    /bin/bash -c "sed -i -e '/^logto/d' -e 's/^listen .*/listen = 128/' docker/uwsgi.ini && exec /bin/bash docker/entrypoint.sh"
+    /bin/bash -c "sed -i -e '/^logto/d' -e 's/^listen .*/listen = 128/' docker/uwsgi.ini && cp dependencies/pip/requirements.txt /srv/tmp/pip_dependencies.txt && exec /bin/bash docker/entrypoint.sh"
 ExecStartPost=/usr/bin/bash %E/bin/wait-ready kpi-app bash -c "echo > /dev/tcp/127.0.0.1/8000"
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/kpi-app.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/kpi-app.ctr-id

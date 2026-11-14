@@ -29,7 +29,9 @@ for POSTGRES_DB in ${KPI_POSTGRES_DB} ${KC_POSTGRES_DB}; do
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS postgis_topology;
 CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
-CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
 SQL
+    # Optional: recent PostGIS images no longer ship the tiger geocoder
+    psql -d "${POSTGRES_DB}" -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" \
+        -c 'CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder' || :
     echo "Postgres database ${POSTGRES_DB} ready for use!"
 done
