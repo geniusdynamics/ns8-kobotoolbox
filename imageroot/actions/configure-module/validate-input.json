@@ -58,6 +58,20 @@
                 "name": {
                     "type": "string",
                     "maxLength": 64
+                },
+                "mode": {
+                    "enum": [
+                        "manual",
+                        "ns8"
+                    ]
+                },
+                "provider": {
+                    "type": "string",
+                    "maxLength": 128
+                },
+                "domain": {
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         }

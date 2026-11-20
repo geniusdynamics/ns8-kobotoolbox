@@ -84,41 +84,94 @@
                 :showCloseButton="false"
                 class="mg-bottom"
               />
-              <NsTextInput
-                v-model.trim="oidc.name"
-                :label="$t('settings.oidc_name')"
+              <cv-select
+                v-model="oidc.mode"
+                :label="$t('settings.oidc_mode')"
+                :invalid-message="error.oidc_mode"
                 :disabled="loading.getConfiguration || loading.configureModule"
-                :invalid-message="error.oidc_name"
-                ref="oidc_name"
                 class="mg-bottom"
-              />
-              <NsTextInput
-                v-model.trim="oidc.issuer"
-                :label="$t('settings.oidc_issuer')"
-                :disabled="loading.getConfiguration || loading.configureModule"
-                :invalid-message="error.oidc_issuer"
-                ref="oidc_issuer"
-                class="mg-bottom"
-              />
-              <NsTextInput
-                v-model.trim="oidc.client_id"
-                :label="$t('settings.oidc_client_id')"
-                :disabled="loading.getConfiguration || loading.configureModule"
-                :invalid-message="error.oidc_client_id"
-                ref="oidc_client_id"
-                class="mg-bottom"
-              />
-              <NsTextInput
-                type="password"
-                v-model="oidc.client_secret"
-                :label="$t('settings.oidc_client_secret')"
-                :disabled="loading.getConfiguration || loading.configureModule"
-                :invalid-message="error.oidc_client_secret"
-                ref="oidc_client_secret"
-                class="mg-bottom"
-                :helper-text="oidcSecretConfigured ? $t('settings.oidc_secret_saved') : ''"
-                autocomplete="new-password"
-              />
+                ref="oidc_mode"
+              >
+                <cv-select-option value="ns8">{{ $t("settings.oidc_ns8") }}</cv-select-option>
+                <cv-select-option value="manual">{{ $t("settings.oidc_manual") }}</cv-select-option>
+              </cv-select>
+              <template v-if="oidc.mode === 'ns8'">
+                <cv-select
+                  v-model="oidc.provider"
+                  :label="$t('settings.oidc_provider')"
+                  :helper-text="oidcProviders.length ? '' : $t('settings.oidc_no_providers')"
+                  :invalid-message="error.oidc_provider"
+                  :disabled="loading.getConfiguration || loading.configureModule"
+                  @change="oidc.domain = ''"
+                  class="mg-bottom"
+                  ref="oidc_provider"
+                >
+                  <cv-select-option value="" disabled>{{ $t("settings.oidc_select_provider") }}</cv-select-option>
+                  <cv-select-option v-if="oidc.provider && !selectedOidcProvider" :value="oidc.provider" disabled>
+                    {{ $t("settings.oidc_provider_unavailable") }}
+                  </cv-select-option>
+                  <cv-select-option v-for="provider in oidcProviders" :key="provider.id" :value="provider.id">
+                    {{ provider.label }} ({{ provider.module }})
+                  </cv-select-option>
+                </cv-select>
+                <cv-select
+                  v-if="oidc.provider"
+                  v-model="oidc.domain"
+                  :label="$t('settings.oidc_domain')"
+                  :invalid-message="error.oidc_domain"
+                  :disabled="loading.getConfiguration || loading.configureModule"
+                  class="mg-bottom"
+                  ref="oidc_domain"
+                >
+                  <cv-select-option value="" disabled>{{ $t("settings.oidc_select_domain") }}</cv-select-option>
+                  <cv-select-option v-if="oidc.domain && !oidcDomains.includes(oidc.domain)" :value="oidc.domain" disabled>
+                    {{ oidc.domain }}
+                  </cv-select-option>
+                  <cv-select-option v-for="domain in oidcDomains" :key="domain" :value="domain">{{ domain }}</cv-select-option>
+                </cv-select>
+              </template>
+              <cv-accordion v-else class="mg-bottom">
+                <cv-accordion-item :open="true">
+                  <template #title>{{ $t("settings.oidc_advanced") }}</template>
+                  <template #content>
+                    <NsTextInput
+                      v-model.trim="oidc.name"
+                      :label="$t('settings.oidc_name')"
+                      :disabled="loading.getConfiguration || loading.configureModule"
+                      :invalid-message="error.oidc_name"
+                      ref="oidc_name"
+                      class="mg-bottom"
+                    />
+                    <NsTextInput
+                      v-model.trim="oidc.issuer"
+                      :label="$t('settings.oidc_issuer')"
+                      :disabled="loading.getConfiguration || loading.configureModule"
+                      :invalid-message="error.oidc_issuer"
+                      ref="oidc_issuer"
+                      class="mg-bottom"
+                    />
+                    <NsTextInput
+                      v-model.trim="oidc.client_id"
+                      :label="$t('settings.oidc_client_id')"
+                      :disabled="loading.getConfiguration || loading.configureModule"
+                      :invalid-message="error.oidc_client_id"
+                      ref="oidc_client_id"
+                      class="mg-bottom"
+                    />
+                    <NsTextInput
+                      type="password"
+                      v-model="oidc.client_secret"
+                      :label="$t('settings.oidc_client_secret')"
+                      :disabled="loading.getConfiguration || loading.configureModule"
+                      :invalid-message="error.oidc_client_secret"
+                      ref="oidc_client_secret"
+                      class="mg-bottom"
+                      :helper-text="oidcSecretConfigured ? $t('settings.oidc_secret_saved') : ''"
+                      autocomplete="new-password"
+                    />
+                  </template>
+                </cv-accordion-item>
+              </cv-accordion>
               <p v-if="oidcCallbackUrl" class="mg-bottom">
                 {{ $t("settings.oidc_callback") }} <code>{{ oidcCallbackUrl }}</code>
               </p>
@@ -177,8 +230,9 @@ export default {
       },
       urlCheckInterval: null,
       host: "",
-      oidc: { enabled: false, issuer: "", client_id: "", client_secret: "", name: "" },
+      oidc: { enabled: false, mode: "ns8", provider: "", domain: "", issuer: "", client_id: "", client_secret: "", name: "" },
       oidcSecretConfigured: false,
+      oidcProviders: [],
       oidcCallbackPath: "",
 
       isLetsEncryptEnabled: false,
@@ -192,6 +246,9 @@ export default {
         configureModule: "",
         oidc_name: "",
         oidc_issuer: "",
+        oidc_mode: "",
+        oidc_provider: "",
+        oidc_domain: "",
         oidc_client_id: "",
         oidc_client_secret: "",
         host: "",
@@ -201,6 +258,12 @@ export default {
     };
   },
   computed: {
+    selectedOidcProvider() {
+      return this.oidcProviders.find((provider) => provider.id === this.oidc.provider);
+    },
+    oidcDomains() {
+      return this.selectedOidcProvider ? this.selectedOidcProvider.domains : [];
+    },
     oidcCallbackUrl() {
       if (!this.host) return "";
       return this.oidcCallbackPath ? `https://${this.host}${this.oidcCallbackPath}` : "";
@@ -269,6 +332,10 @@ export default {
       this.host = config.host;
       const saved = config.oidc || {};
       this.oidc.enabled = Boolean(saved.enabled);
+      this.oidc.mode = saved.mode || (saved.issuer ? "manual" : "ns8");
+      this.oidc.provider = saved.provider || "";
+      this.oidc.domain = saved.domain || "";
+      this.oidcProviders = config.oidc_providers || [];
       this.oidc.issuer = saved.issuer || "";
       this.oidc.client_id = saved.client_id || "";
       this.oidc.client_secret = "";
@@ -294,7 +361,7 @@ export default {
         isValidationOk = false;
       }
       if (this.oidc.enabled && isValidationOk) {
-        const fields = ["issuer", "client_id"];
+        const fields = this.oidc.mode === "ns8" ? ["provider", "domain"] : ["issuer", "client_id"];
         for (const field of fields) {
           if (!this.oidc[field]) {
             const input = "oidc_" + field;
@@ -355,7 +422,16 @@ export default {
           action: taskAction,
           data: {
             host: this.host,
-            oidc: this.oidc.enabled ? { ...this.oidc } : { enabled: false },
+            oidc: !this.oidc.enabled
+              ? { enabled: false }
+              : this.oidc.mode === "ns8"
+                ? {
+                    enabled: true,
+                    mode: "ns8",
+                    provider: this.oidc.provider,
+                    domain: this.oidc.domain,
+                  }
+                : { ...this.oidc },
             lets_encrypt: this.isLetsEncryptEnabled,
             http2https: this.isHttpToHttpsEnabled,
           },

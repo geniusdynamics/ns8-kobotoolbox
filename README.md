@@ -32,9 +32,11 @@ EOF
 
 ## OpenID Connect sign-in
 
-Enable **OpenID Connect** in the instance's NS8 **Settings** and enter the HTTPS issuer URL, client ID, client secret, and optional sign-in button label. Save the settings, then copy the callback URL shown there into the identity provider. Use a confidential client with authorization code, S256 PKCE, and the `openid` scope. Keep the provider's subject identifiers stable.
+In NS8 **Settings**, enable **OpenID Connect**. Choose **NS8 provider** and select an identity provider and user domain. NS8 registers the application and its callback. For an external provider, choose **Enter an external provider** and use **Advanced manual OIDC settings**.
 
-The NS8-managed provider appears alongside local password sign-in and providers added through Django admin. To link an existing KoboToolbox account, sign in to that account first and connect the provider from the account settings. Test the new sign-in in a separate browser session.
+For manual setup, enter the HTTPS issuer URL, client ID, client secret and optional sign-in button label. Save, then copy the callback URL shown in Settings to the provider. Use a confidential client with authorization code, S256 PKCE, and the `openid` scope. Keep the provider subject identifiers stable.
+
+The NS8-managed provider appears alongside local password sign-in and providers added through Django admin. To link an existing KoboToolbox account, sign in to that account first and connect the provider from the account settings. Test the new sign-in in a separate browser session and keep a local administrator separate from SSO. Accounts that KoboToolbox makes SSO-only require their provider even though the site still offers password sign-in.
 
 Leave the secret blank to keep it for the same issuer and client ID. Changing either creates a separate provider identity and requires a new secret and callback registration. Turning off the NS8 provider removes its sign-in option and preserves account links for the same issuer and client. Its settings are included in NS8 backups.
 

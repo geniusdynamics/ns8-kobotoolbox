@@ -8,6 +8,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "bin"))
 from oidc_config import CONFIG, resolve, write
 
 request = json.load(sys.stdin)
-config = resolve(request)
-if "oidc" in request:
+config = resolve(request, apply=True)
+if "oidc" in request or config.get("mode") == "ns8":
     write(CONFIG, json.dumps(config) + "\n")

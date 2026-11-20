@@ -40,7 +40,7 @@
     "host_pattern": "Must be a valid fully qualified domain name",
     "host_format": "Must be a valid fully qualified domain name",
     "oidc_enable": "Enable OpenID Connect",
-    "oidc_behavior": "OIDC adds a sign-in option alongside KoboToolbox passwords. Save the settings to see the callback URL for this issuer and client.",
+    "oidc_behavior": "OIDC adds a sign-in option. Accounts that KoboToolbox makes SSO-only still require their provider. Keep a separate local administrator for recovery.",
     "oidc_name": "Sign-in button label",
     "oidc_issuer": "Issuer URL",
     "oidc_client_id": "Client ID",
@@ -50,7 +50,19 @@
     "oidc_issuer_invalid": "Enter an HTTPS issuer URL without credentials, a query, or a fragment.",
     "oidc_client_id_required": "Enter the client ID.",
     "oidc_secret_required": "Enter the client secret for this issuer and client.",
-    "oidc_https_required": "Turn on HTTP to HTTPS redirection before enabling OIDC."
+    "oidc_https_required": "Turn on HTTP to HTTPS redirection before enabling OIDC.",
+    "oidc_mode": "Provider configuration",
+    "oidc_ns8": "Choose an NS8 provider",
+    "oidc_manual": "Enter an external provider",
+    "oidc_advanced": "Advanced manual OIDC settings",
+    "oidc_provider": "NS8 identity provider",
+    "oidc_domain": "NS8 user domain",
+    "oidc_select_provider": "Select a provider",
+    "oidc_select_domain": "Select a domain",
+    "oidc_no_providers": "No NS8 OIDC provider is available. Configure a provider in NS8 or use manual settings.",
+    "oidc_provider_unavailable": "The selected NS8 identity provider is unavailable.",
+    "oidc_domain_unavailable": "The selected provider does not serve this domain.",
+    "oidc_registration_failed": "NS8 could not register this application with the provider."
   },
   "about": {
     "title": "About"
