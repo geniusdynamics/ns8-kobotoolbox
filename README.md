@@ -63,7 +63,7 @@ same host. The `admin` password is in `state/secrets.env`.
 
 - Reserves one TCP port on the node. The web application is published through Traefik on the configured host name.
 - Runs rootless.
-- Declares these NS8 authorizations: `traefik@node:routeadm`.
+- Uses `traefik@node:routeadm` for the web route. NS8 OIDC registration uses `cluster:accountconsumer` and the `clientadm` role on supported identity providers.
 
 ## Backup
 
