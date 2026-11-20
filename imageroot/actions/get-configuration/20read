@@ -13,8 +13,21 @@
 import json
 import os
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]/"bin"))
+from oidc_config import load
+from oidc_config import provider_id
+
+
+oidc = load()
+public_oidc = {key: oidc[key] for key in ("issuer", "client_id", "name") if key in oidc}
+public_oidc.update(enabled=oidc.get("enabled", False), secret_configured=bool(oidc.get("client_secret")))
+if oidc.get("issuer"):
+    public_oidc["callback_path"] = f"/accounts/oidc/{provider_id(oidc)}/login/callback/"
 
 config = {
+    "oidc": public_oidc,
     "host": os.getenv("TRAEFIK_HOST", ""),
     "http2https": os.getenv("TRAEFIK_HTTP2HTTPS") == "True",
     "lets_encrypt": os.getenv("TRAEFIK_LETS_ENCRYPT") == "True",

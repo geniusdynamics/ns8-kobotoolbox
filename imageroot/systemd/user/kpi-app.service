@@ -25,10 +25,13 @@ RestartSec=10
 TimeoutStartSec=1800
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/kpi-app.pid %t/kpi-app.ctr-id
+ExecStartPre=%E/bin/render-kpi-oidc
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/kpi-app.pid \
     --cidfile %t/kpi-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/kobotoolbox.pod-id --replace -d --name kpi-app \
-    --env-file=%E/state/kpi.env \
+    --env-file=%E/state/kpi.env --env-file=%E/state/kpi-oidc.env \
+    --env=DJANGO_SETTINGS_MODULE=kobo.settings.ns8_kpi_settings \
+    --volume=%E/etc/ns8_kpi_settings.py:/srv/src/kpi/kobo/settings/ns8_kpi_settings.py:ro,Z \
     --env=POSTGRES_PASSWORD=${KOBO_DB_PASSWORD} \
     --env=DATABASE_URL=postgis://kobo:${KOBO_DB_PASSWORD}@127.0.0.1:5432/kobotoolbox \
     --env=KC_DATABASE_URL=postgis://kobo:${KOBO_DB_PASSWORD}@127.0.0.1:5432/kobocat \

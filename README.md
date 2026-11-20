@@ -30,9 +30,17 @@ EOF
 | `lets_encrypt` | yes | boolean | Request a valid Let's Encrypt certificate. |
 | `http2https` | yes | boolean | Redirect all the HTTP requests to HTTPS |
 
+## OpenID Connect sign-in
+
+Enable **OpenID Connect** in the instance's NS8 **Settings** and enter the HTTPS issuer URL, client ID, client secret, and optional sign-in button label. Save the settings, then copy the callback URL shown there into the identity provider. Use a confidential client with authorization code, S256 PKCE, and the `openid` scope. Keep the provider's subject identifiers stable.
+
+The NS8-managed provider appears alongside local password sign-in and providers added through Django admin. To link an existing KoboToolbox account, sign in to that account first and connect the provider from the account settings. Test the new sign-in in a separate browser session.
+
+Leave the secret blank to keep it for the same issuer and client ID. Changing either creates a separate provider identity and requires a new secret and callback registration. Turning off the NS8 provider removes its sign-in option and preserves account links for the same issuer and client. Its settings are included in NS8 backups.
+
 ## Configuration output
 
-`get-configuration` returns: `host`, `lets_encrypt`, `http2https`.
+`get-configuration` returns the hostname, TLS settings and OIDC configuration. The client secret is represented only by a configured flag.
 
 ## Images
 
@@ -51,7 +59,7 @@ same host. The `admin` password is in `state/secrets.env`.
 
 ## Network and access
 
-- Reserves 1 TCP port(s) on the node. The web application is published through Traefik on the configured host name.
+- Reserves one TCP port on the node. The web application is published through Traefik on the configured host name.
 - Runs rootless.
 - Declares these NS8 authorizations: `traefik@node:routeadm`.
 
@@ -99,13 +107,6 @@ Continuous integration:
 The suite installs the module, configures a host name, checks that the web application answers through Traefik, takes UI screenshots and removes the module.
 
 Run it locally with the NS8 standard infrastructure described in the [ns8-github-actions README](https://github.com/NethServer/ns8-github-actions/blob/v1/README.md#running-tests-locally).
-
-## Open items
-
-Found by the NS8 module standards check. These must be resolved before a stable release:
-
-- README still has the template boilerplate
-- MARIADB_IMAGE is used by the module but no image in the label provides it: leftover from the template?
 
 ## Upstream
 

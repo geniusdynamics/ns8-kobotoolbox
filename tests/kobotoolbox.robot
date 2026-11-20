@@ -78,6 +78,24 @@ Check if kobotoolbox works as expected
 Check if kobotoolbox services are healthy
     Wait Until Keyword Succeeds    5 min    10 sec    KoboToolbox services are healthy
 
+
+OIDC can be enabled and disabled without exposing its secret
+    ${output}    ${rc}=    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"${HOST}","lets_encrypt":false,"http2https":true,"oidc":{"issuer":"https://idp.example.test/oidc","client_id":"ns8-ci","client_secret":"ci-example-client-secret","enabled":true,"name":"NS8 Test Identity"}}'
+    ...    return_rc=True    return_stderr=True    return_stdout=False
+    Should Be Equal As Integers    ${rc}    0    ${output}
+    ${output}=    Execute Command    api-cli run module/${module_id}/get-configuration
+    ${config}=    Evaluate    json.loads($output)["oidc"]    modules=json
+    Should Be True    ${config}[enabled]
+    Should Be True    ${config}[secret_configured]
+    Should Not Contain    ${output}    ci-example-client-secret
+    ${page}=    Execute Command    curl -kfsS --resolve ${HOST}:443:127.0.0.1 https://${HOST}/accounts/login/
+    Should Contain    ${page}    NS8 Test Identity
+    ${output}    ${rc}=    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"${HOST}","lets_encrypt":false,"http2https":true,"oidc":{"enabled":false}}'
+    ...    return_rc=True    return_stderr=True    return_stdout=False
+    Should Be Equal As Integers    ${rc}    0    ${output}
+    ${page}=    Execute Command    curl -kfsS --resolve ${HOST}:443:127.0.0.1 https://${HOST}/accounts/login/
+    Should Not Contain    ${page}    NS8 Test Identity
+
 Check if kobotoolbox is removed correctly
     ${rc} =    Execute Command    remove-module --no-preserve ${module_id}
     ...    return_rc=True  return_stdout=False

@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+import json
+
+from oidc_config import load, provider_id, write
+
+oidc = load()
+apps = []
+if oidc.get("enabled"):
+    apps.append({
+        "provider_id": provider_id(oidc),
+        "name": oidc["name"],
+        "client_id": oidc["client_id"],
+        "secret": oidc["client_secret"],
+        "settings": {"server_url": oidc["issuer"], "oauth_pkce_enabled": True},
+    })
+write("kpi-oidc.env", "KOBO_NS8_OIDC_APPS=" + json.dumps(apps) + "\n")

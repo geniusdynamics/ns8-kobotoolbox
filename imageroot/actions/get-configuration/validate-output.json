@@ -31,6 +31,36 @@
             "type": "boolean",
             "title": "HTTP to HTTPS redirection",
             "description": "Redirect all the HTTP requests to HTTPS"
+        },
+        "oidc": {
+            "type": "object",
+            "required": [
+                "enabled"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "issuer": {
+                    "type": "string",
+                    "maxLength": 2048
+                },
+                "client_id": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "secret_configured": {
+                    "type": "boolean"
+                },
+                "callback_path": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 64
+                }
+            }
         }
     }
 }

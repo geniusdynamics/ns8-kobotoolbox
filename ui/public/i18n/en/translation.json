@@ -38,7 +38,19 @@
     "instance_configuration": "Configure kobotoolbox",
     "domain_already_used_in_traefik": "Domain already used in traefik",
     "host_pattern": "Must be a valid fully qualified domain name",
-    "host_format": "Must be a valid fully qualified domain name"
+    "host_format": "Must be a valid fully qualified domain name",
+    "oidc_enable": "Enable OpenID Connect",
+    "oidc_behavior": "OIDC adds a sign-in option alongside KoboToolbox passwords. Save the settings to see the callback URL for this issuer and client.",
+    "oidc_name": "Sign-in button label",
+    "oidc_issuer": "Issuer URL",
+    "oidc_client_id": "Client ID",
+    "oidc_client_secret": "Client secret",
+    "oidc_callback": "Callback URL",
+    "oidc_secret_saved": "Leave blank to keep the saved secret for the same issuer and client.",
+    "oidc_issuer_invalid": "Enter an HTTPS issuer URL without credentials, a query, or a fragment.",
+    "oidc_client_id_required": "Enter the client ID.",
+    "oidc_secret_required": "Enter the client secret for this issuer and client.",
+    "oidc_https_required": "Turn on HTTP to HTTPS redirection before enabling OIDC."
   },
   "about": {
     "title": "About"

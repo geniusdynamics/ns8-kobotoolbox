@@ -69,6 +69,60 @@
                 </template>
               </cv-accordion-item>
             </cv-accordion>
+
+            <NsToggle
+              v-model="oidc.enabled"
+              :label="$t('settings.oidc_enable')"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              class="mg-bottom"
+            />
+            <template v-if="oidc.enabled">
+              <NsInlineNotification
+                kind="info"
+                :title="$t('settings.oidc_enable')"
+                :description="$t('settings.oidc_behavior')"
+                :showCloseButton="false"
+                class="mg-bottom"
+              />
+              <NsTextInput
+                v-model.trim="oidc.name"
+                :label="$t('settings.oidc_name')"
+                :disabled="loading.getConfiguration || loading.configureModule"
+                :invalid-message="error.oidc_name"
+                ref="oidc_name"
+                class="mg-bottom"
+              />
+              <NsTextInput
+                v-model.trim="oidc.issuer"
+                :label="$t('settings.oidc_issuer')"
+                :disabled="loading.getConfiguration || loading.configureModule"
+                :invalid-message="error.oidc_issuer"
+                ref="oidc_issuer"
+                class="mg-bottom"
+              />
+              <NsTextInput
+                v-model.trim="oidc.client_id"
+                :label="$t('settings.oidc_client_id')"
+                :disabled="loading.getConfiguration || loading.configureModule"
+                :invalid-message="error.oidc_client_id"
+                ref="oidc_client_id"
+                class="mg-bottom"
+              />
+              <NsTextInput
+                type="password"
+                v-model="oidc.client_secret"
+                :label="$t('settings.oidc_client_secret')"
+                :disabled="loading.getConfiguration || loading.configureModule"
+                :invalid-message="error.oidc_client_secret"
+                ref="oidc_client_secret"
+                class="mg-bottom"
+                :helper-text="oidcSecretConfigured ? $t('settings.oidc_secret_saved') : ''"
+                autocomplete="new-password"
+              />
+              <p v-if="oidcCallbackUrl" class="mg-bottom">
+                {{ $t("settings.oidc_callback") }} <code>{{ oidcCallbackUrl }}</code>
+              </p>
+            </template>
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
@@ -123,6 +177,10 @@ export default {
       },
       urlCheckInterval: null,
       host: "",
+      oidc: { enabled: false, issuer: "", client_id: "", client_secret: "", name: "" },
+      oidcSecretConfigured: false,
+      oidcCallbackPath: "",
+
       isLetsEncryptEnabled: false,
       isHttpToHttpsEnabled: true,
       loading: {
@@ -132,6 +190,10 @@ export default {
       error: {
         getConfiguration: "",
         configureModule: "",
+        oidc_name: "",
+        oidc_issuer: "",
+        oidc_client_id: "",
+        oidc_client_secret: "",
         host: "",
         lets_encrypt: "",
         http2https: "",
@@ -139,6 +201,11 @@ export default {
     };
   },
   computed: {
+    oidcCallbackUrl() {
+      if (!this.host) return "";
+      return this.oidcCallbackPath ? `https://${this.host}${this.oidcCallbackPath}` : "";
+    },
+
     ...mapState(["instanceName", "core", "appName"]),
   },
   created() {
@@ -200,6 +267,14 @@ export default {
     getConfigurationCompleted(taskContext, taskResult) {
       const config = taskResult.output;
       this.host = config.host;
+      const saved = config.oidc || {};
+      this.oidc.enabled = Boolean(saved.enabled);
+      this.oidc.issuer = saved.issuer || "";
+      this.oidc.client_id = saved.client_id || "";
+      this.oidc.client_secret = "";
+      this.oidcSecretConfigured = Boolean(saved.secret_configured);
+      this.oidcCallbackPath = saved.callback_path || "";
+      this.oidc.name = saved.name || "";
       this.isLetsEncryptEnabled = config.lets_encrypt;
       this.isHttpToHttpsEnabled = config.http2https;
 
@@ -217,6 +292,17 @@ export default {
           this.focusElement("host");
         }
         isValidationOk = false;
+      }
+      if (this.oidc.enabled && isValidationOk) {
+        const fields = ["issuer", "client_id"];
+        for (const field of fields) {
+          if (!this.oidc[field]) {
+            const input = "oidc_" + field;
+            this.error[input] = this.$t("common.required");
+            this.focusElement(input);
+            return false;
+          }
+        }
       }
       return isValidationOk;
     },
@@ -269,6 +355,7 @@ export default {
           action: taskAction,
           data: {
             host: this.host,
+            oidc: this.oidc.enabled ? { ...this.oidc } : { enabled: false },
             lets_encrypt: this.isLetsEncryptEnabled,
             http2https: this.isHttpToHttpsEnabled,
           },
