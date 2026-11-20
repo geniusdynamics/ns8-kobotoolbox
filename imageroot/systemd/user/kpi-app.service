@@ -25,10 +25,13 @@ RestartSec=10
 TimeoutStartSec=1800
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/kpi-app.pid %t/kpi-app.ctr-id
+ExecStartPre=%E/bin/render-kpi-oidc
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/kpi-app.pid \
     --cidfile %t/kpi-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/kobotoolbox.pod-id --replace -d --name kpi-app \
-    --env-file=%E/state/kpi.env \
+    --env-file=%E/state/kpi.env --env-file=%E/state/kpi-oidc.env \
+    --volume=%E/etc/ns8-kpi-oidc.py:/srv/ns8-oidc.py:ro,Z \
+    --volume=%E/bin/start-kpi:/srv/ns8-start-kpi:ro,Z \
     --env=POSTGRES_PASSWORD=${KOBO_DB_PASSWORD} \
     --env=DATABASE_URL=postgis://kobo:${KOBO_DB_PASSWORD}@127.0.0.1:5432/kobotoolbox \
     --env=KC_DATABASE_URL=postgis://kobo:${KOBO_DB_PASSWORD}@127.0.0.1:5432/kobocat \
@@ -40,7 +43,7 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/kpi-app.pid \
     --volume=static-files:/srv/static:z \
     --volume=%E/bin/kpi-init:/srv/init:ro,Z \
     ${KPI_IMAGE} \
-    /bin/bash -c "sed -i -e '/^logto/d' -e 's/^listen .*/listen = 128/' docker/uwsgi.ini && cp dependencies/pip/requirements.txt /srv/tmp/pip_dependencies.txt && exec /bin/bash docker/entrypoint.sh"
+    /bin/bash /srv/ns8-start-kpi
 ExecStartPost=/usr/bin/bash %E/bin/wait-ready kpi-app bash -c "echo > /dev/tcp/127.0.0.1/8000"
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/kpi-app.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/kpi-app.ctr-id

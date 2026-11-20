@@ -32,6 +32,52 @@
             "type": "boolean",
             "title": "HTTP to HTTPS redirection",
             "description": "Redirect all the HTTP requests to HTTPS"
+        },
+        "oidc": {
+            "type": "object",
+            "required": [
+                "enabled"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "issuer": {
+                    "type": "string",
+                    "maxLength": 2048
+                },
+                "client_id": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "client_secret": {
+                    "type": "string",
+                    "maxLength": 4096
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 64
+                },
+                "mode": {
+                    "enum": [
+                        "manual",
+                        "ns8"
+                    ]
+                },
+                "provider": {
+                    "type": "string",
+                    "maxLength": 128
+                },
+                "domain": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "django_admin_enabled": {
+            "type": "boolean",
+            "description": "Expose the staff-only Django Admin URL through the module web route."
         }
     }
 }

@@ -71,6 +71,15 @@
             >
               {{ $t("status.configure") }}
             </NsButton>
+            <NsButton
+              v-if="host && djangoAdminEnabled"
+              kind="ghost"
+              :icon="Launch20"
+              :disabled="loading.getConfiguration"
+              @click="goToAdministration"
+            >
+              {{ $t("status.open_administration") }}
+            </NsButton>
           </template>
         </NsInfoCard>
       </cv-column>
@@ -317,6 +326,7 @@ export default {
       isRedirectChecked: false,
       redirectTimeout: 0,
       host: "",
+      djangoAdminEnabled: false,
       status: {
         instance: "",
         services: [],
@@ -384,6 +394,9 @@ export default {
     this.listBackupRepositories();
   },
   methods: {
+    goToAdministration() {
+      window.open(`https://${this.host}/admin/`, "_blank", "noopener");
+    },
     goToWebapp() {
       window.open(`https://${this.host}`, "_blank");
     },
@@ -432,6 +445,7 @@ export default {
     getConfigurationCompleted(taskContext, taskResult) {
       const config = taskResult.output;
       this.host = config.host;
+      this.djangoAdminEnabled = config.django_admin_enabled !== false;
       this.loading.getConfiguration = false;
     },
     async getStatus() {

@@ -28,6 +28,8 @@ agent.set_env("TRAEFIK_LETS_ENCRYPT", le)
 
 # Make sure everything is saved inside the environment file
 # just before starting systemd unit
+if "django_admin_enabled" in data:
+    agent.set_env("KOBO_DJANGO_ADMIN_ENABLED", data["django_admin_enabled"])
 agent.dump_env()
 
 # Find default traefik instance for current node

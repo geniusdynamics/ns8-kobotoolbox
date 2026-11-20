@@ -17,10 +17,12 @@ Restart=always
 RestartSec=10
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/nginx-app.pid %t/nginx-app.ctr-id
+ExecStartPre=%E/bin/render-django-admin-route
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/nginx-app.pid \
     --cidfile %t/nginx-app.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/kobotoolbox.pod-id --replace -d --name nginx-app \
     --volume=%E/etc/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro,Z \
+    --volume=%E/state/django-admin.conf:/etc/nginx/django-admin.conf:ro,Z \
     --volume=static-files:/srv/www/kpi:ro,z \
     --volume=kobocat-media:/media:ro,z \
     --volume=kpi-media:/srv/kpi_media:ro,z \

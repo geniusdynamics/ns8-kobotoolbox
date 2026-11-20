@@ -1,0 +1,8 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+sed -i -e '/^logto/d' -e 's/^listen .*/listen = 128/' docker/uwsgi.ini
+cp dependencies/pip/requirements.txt /srv/tmp/pip_dependencies.txt
+grep -Fxq 'gosu "${UWSGI_USER}" scripts/migrate.sh' docker/entrypoint.sh
+sed -i '/^gosu "${UWSGI_USER}" scripts\/migrate.sh$/a gosu "${UWSGI_USER}" python manage.py shell < /srv/ns8-oidc.py' docker/entrypoint.sh
+exec /bin/bash docker/entrypoint.sh
