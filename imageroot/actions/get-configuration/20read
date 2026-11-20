@@ -27,6 +27,7 @@ if oidc.get("issuer"):
 
 config = {
     "oidc": public_oidc,
+    "django_admin_enabled": os.getenv("KOBO_DJANGO_ADMIN_ENABLED", "True") == "True",
     "oidc_providers": providers(),
     "host": os.getenv("TRAEFIK_HOST", ""),
     "http2https": os.getenv("TRAEFIK_HTTP2HTTPS") == "True",

@@ -79,7 +79,7 @@ Check if kobotoolbox services are healthy
     Wait Until Keyword Succeeds    5 min    10 sec    KoboToolbox services are healthy
 
 
-OIDC can be enabled and disabled without exposing its secret
+OIDC toggles independently from the Django Admin route
     ${output}    ${rc}=    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"${HOST}","lets_encrypt":false,"http2https":true,"oidc":{"issuer":"https://idp.example.test/oidc","client_id":"ns8-ci","client_secret":"ci-example-client-secret","enabled":true,"name":"NS8 Test Identity"}}'
     ...    return_rc=True    return_stderr=True    return_stdout=False
     Should Be Equal As Integers    ${rc}    0    ${output}
@@ -88,13 +88,21 @@ OIDC can be enabled and disabled without exposing its secret
     Should Be True    ${config}[enabled]
     Should Be True    ${config}[secret_configured]
     Should Not Contain    ${output}    ci-example-client-secret
+    ${admin}=    Execute Command    curl -ksS -o /dev/null -w '\%{http_code}' --resolve ${HOST}:443:127.0.0.1 https://${HOST}/admin/
+    Should Be Equal    ${admin}    302
     ${page}=    Execute Command    curl -kfsS --resolve ${HOST}:443:127.0.0.1 https://${HOST}/accounts/login/
     Should Contain    ${page}    NS8 Test Identity
-    ${output}    ${rc}=    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"${HOST}","lets_encrypt":false,"http2https":true,"oidc":{"enabled":false}}'
+    ${output}    ${rc}=    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host":"${HOST}","lets_encrypt":false,"http2https":true,"oidc":{"enabled":false},"django_admin_enabled":false}'
     ...    return_rc=True    return_stderr=True    return_stdout=False
     Should Be Equal As Integers    ${rc}    0    ${output}
     ${page}=    Execute Command    curl -kfsS --resolve ${HOST}:443:127.0.0.1 https://${HOST}/accounts/login/
     Should Not Contain    ${page}    NS8 Test Identity
+
+    FOR    ${path}    IN    /admin    /admin/    /admin/auth/
+        ${status}=    Execute Command    curl -ksS -o /dev/null -w '\%{http_code}' --resolve ${HOST}:443:127.0.0.1 https://${HOST}${path}
+        Should Be Equal    ${status}    404
+    END
+    KoboToolbox login page answers through Traefik
 
 Check if kobotoolbox is removed correctly
     ${rc} =    Execute Command    remove-module --no-preserve ${module_id}

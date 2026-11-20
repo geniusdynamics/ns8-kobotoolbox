@@ -74,6 +74,10 @@
                     "maxLength": 255
                 }
             }
+        },
+        "django_admin_enabled": {
+            "type": "boolean",
+            "description": "Expose the staff-only Django Admin URL through the module web route."
         }
     }
 }

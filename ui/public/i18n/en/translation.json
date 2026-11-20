@@ -22,7 +22,8 @@
     "kobotoolbox_webapp": "kobotoolbox webapp",
     "not_configured": "Not configured",
     "open_webapp": "Open kobotoolbox",
-    "configure": "Configure"
+    "configure": "Configure",
+    "open_administration": "Open Django Admin"
   },
   "settings": {
     "title": "Settings",
@@ -62,7 +63,9 @@
     "oidc_no_providers": "No NS8 OIDC provider is available. Configure a provider in NS8 or use manual settings.",
     "oidc_provider_unavailable": "The selected NS8 identity provider is unavailable.",
     "oidc_domain_unavailable": "The selected provider does not serve this domain.",
-    "oidc_registration_failed": "NS8 could not register this application with the provider."
+    "oidc_registration_failed": "NS8 could not register this application with the provider.",
+    "django_admin_enabled": "Allow Django Admin access",
+    "django_admin_help": "Allow staff to open /admin/ through this app’s web address. Disabling it leaves the KoboToolbox site and API available."
   },
   "about": {
     "title": "About"

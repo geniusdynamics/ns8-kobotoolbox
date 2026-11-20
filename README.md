@@ -59,6 +59,10 @@ The pod follows kobo-docker on a single host name: nginx (port 8080) serves KPI 
 `/` and Enketo Express on `/enketo/`. The KoboCAT endpoints are served by KPI on the
 same host. The `admin` password is in `state/secrets.env`.
 
+## Django Admin access
+
+Use **Allow Django Admin access** in the NS8 instance’s Settings to control the staff-only `/admin/` route. The Status page links to Django Admin while access is enabled. The setting defaults to enabled for existing deployments. Turning it off blocks `/admin` and `/admin/` without changing the main KoboToolbox site, login, API, or existing accounts.
+
 ## Network and access
 
 - Reserves one TCP port on the node. The web application is published through Traefik on the configured host name.

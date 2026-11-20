@@ -70,6 +70,16 @@
             </cv-accordion>
 
             <NsToggle
+              v-model="djangoAdminEnabled"
+              :label="$t('settings.django_admin_enabled')"
+              :disabled="loading.getConfiguration || loading.configureModule"
+              class="mg-bottom"
+            >
+              <template #tooltip>{{
+                $t("settings.django_admin_help")
+              }}</template>
+            </NsToggle>
+            <NsToggle
               v-model="oidc.enabled"
               :label="$t('settings.oidc_enable')"
               :disabled="loading.getConfiguration || loading.configureModule"
@@ -273,6 +283,7 @@ export default {
       },
       urlCheckInterval: null,
       host: "",
+      djangoAdminEnabled: true,
       oidc: {
         enabled: false,
         mode: "ns8",
@@ -386,6 +397,7 @@ export default {
     getConfigurationCompleted(taskContext, taskResult) {
       const config = taskResult.output;
       this.host = config.host;
+      this.djangoAdminEnabled = config.django_admin_enabled !== false;
       const saved = config.oidc || {};
       this.oidc.enabled = Boolean(saved.enabled);
       this.oidc.mode = saved.mode || (saved.issuer ? "manual" : "ns8");
@@ -481,6 +493,7 @@ export default {
           action: taskAction,
           data: {
             host: this.host,
+            django_admin_enabled: this.djangoAdminEnabled,
             oidc: !this.oidc.enabled
               ? { enabled: false }
               : this.oidc.mode === "ns8"

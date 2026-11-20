@@ -20,4 +20,7 @@ for evar in [
     ]:
     agent.set_env(evar, original_environment[evar])
 
+if "KOBO_DJANGO_ADMIN_ENABLED" in original_environment:
+    agent.set_env("KOBO_DJANGO_ADMIN_ENABLED", original_environment["KOBO_DJANGO_ADMIN_ENABLED"])
+
 agent.dump_env()
