@@ -3,7 +3,6 @@ import json
 import os
 
 from allauth.socialaccount.models import SocialApp
-from django.contrib.sites.models import Site
 from django.db import transaction
 
 apps = json.loads(os.environ.get("KOBO_NS8_OIDC_APPS", "[]"))
@@ -25,7 +24,6 @@ with transaction.atomic():
                 "settings": {**data["settings"], "ns8_managed": True},
             },
         )
-        app.sites.set(Site.objects.all())
         active_ids.append(app.pk)
     # SocialAccount links use the provider ID and survive removal of a SocialApp.
     managed.exclude(pk__in=active_ids).delete()
