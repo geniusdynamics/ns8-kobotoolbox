@@ -12,6 +12,9 @@ if oidc.get("enabled"):
         "name": oidc["name"],
         "client_id": oidc["client_id"],
         "secret": oidc["client_secret"],
-        "settings": {"server_url": oidc["issuer"], "oauth_pkce_enabled": True},
+        "settings": {
+            "server_url": oidc["issuer"].rstrip("/") + "/.well-known/openid-configuration",
+            "oauth_pkce_enabled": True,
+        },
     })
 write("kpi-oidc.env", "KOBO_NS8_OIDC_APPS=" + json.dumps(apps) + "\n")
