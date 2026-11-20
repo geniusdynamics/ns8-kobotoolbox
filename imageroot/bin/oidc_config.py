@@ -127,7 +127,8 @@ def managed(request, incoming, previous, apply):
     domain = incoming.get("domain", "")
     client_id = os.environ["MODULE_ID"]
     host = request["host"].lower()
-    if (previous.get("mode") == "ns8" and previous.get("provider") == provider
+    if (previous.get("enabled") and previous.get("mode") == "ns8"
+            and previous.get("provider") == provider
             and previous.get("domain") == domain and previous.get("registered_host") == host
             and previous.get("client_id") == client_id and previous.get("client_secret")):
         return {**previous, "enabled": True}

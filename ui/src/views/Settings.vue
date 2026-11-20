@@ -61,12 +61,11 @@
                 $t("settings.enabled")
               }}</template>
             </cv-toggle>
-              <!-- advanced options -->
+            <!-- advanced options -->
             <cv-accordion ref="accordion" class="maxwidth mg-bottom">
               <cv-accordion-item :open="toggleAccordion[0]">
                 <template slot="title">{{ $t("settings.advanced") }}</template>
-                <template slot="content">
-                </template>
+                <template slot="content"> </template>
               </cv-accordion-item>
             </cv-accordion>
 
@@ -92,25 +91,43 @@
                 class="mg-bottom"
                 ref="oidc_mode"
               >
-                <cv-select-option value="ns8">{{ $t("settings.oidc_ns8") }}</cv-select-option>
-                <cv-select-option value="manual">{{ $t("settings.oidc_manual") }}</cv-select-option>
+                <cv-select-option value="ns8">{{
+                  $t("settings.oidc_ns8")
+                }}</cv-select-option>
+                <cv-select-option value="manual">{{
+                  $t("settings.oidc_manual")
+                }}</cv-select-option>
               </cv-select>
               <template v-if="oidc.mode === 'ns8'">
                 <cv-select
                   v-model="oidc.provider"
                   :label="$t('settings.oidc_provider')"
-                  :helper-text="oidcProviders.length ? '' : $t('settings.oidc_no_providers')"
+                  :helper-text="
+                    oidcProviders.length ? '' : $t('settings.oidc_no_providers')
+                  "
                   :invalid-message="error.oidc_provider"
-                  :disabled="loading.getConfiguration || loading.configureModule"
+                  :disabled="
+                    loading.getConfiguration || loading.configureModule
+                  "
                   @change="oidc.domain = ''"
                   class="mg-bottom"
                   ref="oidc_provider"
                 >
-                  <cv-select-option value="" disabled>{{ $t("settings.oidc_select_provider") }}</cv-select-option>
-                  <cv-select-option v-if="oidc.provider && !selectedOidcProvider" :value="oidc.provider" disabled>
+                  <cv-select-option value="" disabled>{{
+                    $t("settings.oidc_select_provider")
+                  }}</cv-select-option>
+                  <cv-select-option
+                    v-if="oidc.provider && !selectedOidcProvider"
+                    :value="oidc.provider"
+                    disabled
+                  >
                     {{ $t("settings.oidc_provider_unavailable") }}
                   </cv-select-option>
-                  <cv-select-option v-for="provider in oidcProviders" :key="provider.id" :value="provider.id">
+                  <cv-select-option
+                    v-for="provider in oidcProviders"
+                    :key="provider.id"
+                    :value="provider.id"
+                  >
                     {{ provider.label }} ({{ provider.module }})
                   </cv-select-option>
                 </cv-select>
@@ -119,15 +136,28 @@
                   v-model="oidc.domain"
                   :label="$t('settings.oidc_domain')"
                   :invalid-message="error.oidc_domain"
-                  :disabled="loading.getConfiguration || loading.configureModule"
+                  :disabled="
+                    loading.getConfiguration || loading.configureModule
+                  "
                   class="mg-bottom"
                   ref="oidc_domain"
                 >
-                  <cv-select-option value="" disabled>{{ $t("settings.oidc_select_domain") }}</cv-select-option>
-                  <cv-select-option v-if="oidc.domain && !oidcDomains.includes(oidc.domain)" :value="oidc.domain" disabled>
+                  <cv-select-option value="" disabled>{{
+                    $t("settings.oidc_select_domain")
+                  }}</cv-select-option>
+                  <cv-select-option
+                    v-if="oidc.domain && !oidcDomains.includes(oidc.domain)"
+                    :value="oidc.domain"
+                    disabled
+                  >
                     {{ oidc.domain }}
                   </cv-select-option>
-                  <cv-select-option v-for="domain in oidcDomains" :key="domain" :value="domain">{{ domain }}</cv-select-option>
+                  <cv-select-option
+                    v-for="domain in oidcDomains"
+                    :key="domain"
+                    :value="domain"
+                    >{{ domain }}</cv-select-option
+                  >
                 </cv-select>
               </template>
               <cv-accordion v-else class="mg-bottom">
@@ -137,7 +167,9 @@
                     <NsTextInput
                       v-model.trim="oidc.name"
                       :label="$t('settings.oidc_name')"
-                      :disabled="loading.getConfiguration || loading.configureModule"
+                      :disabled="
+                        loading.getConfiguration || loading.configureModule
+                      "
                       :invalid-message="error.oidc_name"
                       ref="oidc_name"
                       class="mg-bottom"
@@ -145,7 +177,9 @@
                     <NsTextInput
                       v-model.trim="oidc.issuer"
                       :label="$t('settings.oidc_issuer')"
-                      :disabled="loading.getConfiguration || loading.configureModule"
+                      :disabled="
+                        loading.getConfiguration || loading.configureModule
+                      "
                       :invalid-message="error.oidc_issuer"
                       ref="oidc_issuer"
                       class="mg-bottom"
@@ -153,7 +187,9 @@
                     <NsTextInput
                       v-model.trim="oidc.client_id"
                       :label="$t('settings.oidc_client_id')"
-                      :disabled="loading.getConfiguration || loading.configureModule"
+                      :disabled="
+                        loading.getConfiguration || loading.configureModule
+                      "
                       :invalid-message="error.oidc_client_id"
                       ref="oidc_client_id"
                       class="mg-bottom"
@@ -162,18 +198,25 @@
                       type="password"
                       v-model="oidc.client_secret"
                       :label="$t('settings.oidc_client_secret')"
-                      :disabled="loading.getConfiguration || loading.configureModule"
+                      :disabled="
+                        loading.getConfiguration || loading.configureModule
+                      "
                       :invalid-message="error.oidc_client_secret"
                       ref="oidc_client_secret"
                       class="mg-bottom"
-                      :helper-text="oidcSecretConfigured ? $t('settings.oidc_secret_saved') : ''"
+                      :helper-text="
+                        oidcSecretConfigured
+                          ? $t('settings.oidc_secret_saved')
+                          : ''
+                      "
                       autocomplete="new-password"
                     />
                   </template>
                 </cv-accordion-item>
               </cv-accordion>
               <p v-if="oidcCallbackUrl" class="mg-bottom">
-                {{ $t("settings.oidc_callback") }} <code>{{ oidcCallbackUrl }}</code>
+                {{ $t("settings.oidc_callback") }}
+                <code>{{ oidcCallbackUrl }}</code>
               </p>
             </template>
             <cv-row v-if="error.configureModule">
@@ -230,7 +273,16 @@ export default {
       },
       urlCheckInterval: null,
       host: "",
-      oidc: { enabled: false, mode: "ns8", provider: "", domain: "", issuer: "", client_id: "", client_secret: "", name: "" },
+      oidc: {
+        enabled: false,
+        mode: "ns8",
+        provider: "",
+        domain: "",
+        issuer: "",
+        client_id: "",
+        client_secret: "",
+        name: "",
+      },
       oidcSecretConfigured: false,
       oidcProviders: [],
       oidcCallbackPath: "",
@@ -259,14 +311,18 @@ export default {
   },
   computed: {
     selectedOidcProvider() {
-      return this.oidcProviders.find((provider) => provider.id === this.oidc.provider);
+      return this.oidcProviders.find(
+        (provider) => provider.id === this.oidc.provider
+      );
     },
     oidcDomains() {
       return this.selectedOidcProvider ? this.selectedOidcProvider.domains : [];
     },
     oidcCallbackUrl() {
       if (!this.host) return "";
-      return this.oidcCallbackPath ? `https://${this.host}${this.oidcCallbackPath}` : "";
+      return this.oidcCallbackPath
+        ? `https://${this.host}${this.oidcCallbackPath}`
+        : "";
     },
 
     ...mapState(["instanceName", "core", "appName"]),
@@ -361,7 +417,10 @@ export default {
         isValidationOk = false;
       }
       if (this.oidc.enabled && isValidationOk) {
-        const fields = this.oidc.mode === "ns8" ? ["provider", "domain"] : ["issuer", "client_id"];
+        const fields =
+          this.oidc.mode === "ns8"
+            ? ["provider", "domain"]
+            : ["issuer", "client_id"];
         for (const field of fields) {
           if (!this.oidc[field]) {
             const input = "oidc_" + field;
@@ -425,13 +484,13 @@ export default {
             oidc: !this.oidc.enabled
               ? { enabled: false }
               : this.oidc.mode === "ns8"
-                ? {
-                    enabled: true,
-                    mode: "ns8",
-                    provider: this.oidc.provider,
-                    domain: this.oidc.domain,
-                  }
-                : { ...this.oidc },
+              ? {
+                  enabled: true,
+                  mode: "ns8",
+                  provider: this.oidc.provider,
+                  domain: this.oidc.domain,
+                }
+              : { ...this.oidc },
             lets_encrypt: this.isLetsEncryptEnabled,
             http2https: this.isHttpToHttpsEnabled,
           },

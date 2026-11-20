@@ -32,7 +32,7 @@ EOF
 
 ## OpenID Connect sign-in
 
-In NS8 **Settings**, enable **OpenID Connect**. Choose **Choose an NS8 provider** and select an identity provider and user domain. NS8 registers the application and its callback. For an external provider, choose **Enter an external provider** and use **Advanced manual OIDC settings**.
+In NS8 **Settings**, enable **OpenID Connect**. Under **Choose an NS8 provider**, select an identity provider and user domain. NS8 registers the application and its callback. For an external provider, choose **Enter an external provider** and use **Advanced manual OIDC settings**.
 
 For manual setup, enter the HTTPS issuer URL, client ID, client secret and optional sign-in button label. Save, then copy the callback URL shown in Settings to the provider. Use a confidential client with authorization code, S256 PKCE, and the `openid profile email` scopes. Keep the provider subject identifiers stable.
 
