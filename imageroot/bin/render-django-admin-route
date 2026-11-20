@@ -1,0 +1,14 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -euo pipefail
+
+temporary=$(mktemp ./django-admin.conf.XXXXXX)
+trap 'rm -f "$temporary"' EXIT
+if [[ ${KOBO_DJANGO_ADMIN_ENABLED:-True} == False ]]; then
+    cat >"$temporary" <<'NGINX'
+location = /admin { return 404; }
+location ^~ /admin/ { return 404; }
+NGINX
+fi
+# The nginx master reads this generated include at startup.
+mv -f "$temporary" django-admin.conf

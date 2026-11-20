@@ -30,9 +30,19 @@ EOF
 | `lets_encrypt` | yes | boolean | Request a valid Let's Encrypt certificate. |
 | `http2https` | yes | boolean | Redirect all the HTTP requests to HTTPS |
 
+## OpenID Connect sign-in
+
+In NS8 **Settings**, enable **OpenID Connect**. Under **Choose an NS8 provider**, select an identity provider and user domain. NS8 registers the application and its callback. For an external provider, choose **Enter an external provider** and use **Advanced manual OIDC settings**.
+
+For manual setup, enter the HTTPS issuer URL, client ID, client secret and optional sign-in button label. Save, then copy the callback URL shown in Settings to the provider. Use a confidential client with authorization code, S256 PKCE, and the `openid profile email` scopes. Keep the provider subject identifiers stable.
+
+The NS8-managed provider appears alongside local password sign-in and providers added through Django admin. To link an existing KoboToolbox account, sign in to that account first and connect the provider from the account settings. Test the new sign-in in a separate browser session and keep a local administrator separate from SSO. Accounts that KoboToolbox makes SSO-only require their provider even though the site still offers password sign-in.
+
+Leave the secret blank to keep it for the same issuer and client ID. Changing either creates a separate provider identity and requires a new secret and callback registration. Turning off the NS8 provider removes its sign-in option and preserves account links for the same issuer and client. Its settings are included in NS8 backups.
+
 ## Configuration output
 
-`get-configuration` returns: `host`, `lets_encrypt`, `http2https`.
+`get-configuration` returns the hostname, TLS settings and OIDC configuration. The client secret is represented only by a configured flag.
 
 ## Images
 
@@ -49,11 +59,15 @@ The pod follows kobo-docker on a single host name: nginx (port 8080) serves KPI 
 `/` and Enketo Express on `/enketo/`. The KoboCAT endpoints are served by KPI on the
 same host. The `admin` password is in `state/secrets.env`.
 
+## Django Admin access
+
+Use **Allow Django Admin access** in the NS8 instance’s Settings to control the staff-only `/admin/` route. The Status page links to Django Admin while access is enabled. The setting defaults to enabled for existing deployments. Turning it off blocks `/admin` and `/admin/` without changing the main KoboToolbox site, login, API, or existing accounts.
+
 ## Network and access
 
-- Reserves 1 TCP port(s) on the node. The web application is published through Traefik on the configured host name.
+- Reserves one TCP port on the node. The web application is published through Traefik on the configured host name.
 - Runs rootless.
-- Declares these NS8 authorizations: `traefik@node:routeadm`.
+- Uses `traefik@node:routeadm` for the web route. NS8 OIDC registration uses `cluster:accountconsumer` and the `clientadm` role on supported identity providers.
 
 ## Backup
 
@@ -99,13 +113,6 @@ Continuous integration:
 The suite installs the module, configures a host name, checks that the web application answers through Traefik, takes UI screenshots and removes the module.
 
 Run it locally with the NS8 standard infrastructure described in the [ns8-github-actions README](https://github.com/NethServer/ns8-github-actions/blob/v1/README.md#running-tests-locally).
-
-## Open items
-
-Found by the NS8 module standards check. These must be resolved before a stable release:
-
-- README still has the template boilerplate
-- MARIADB_IMAGE is used by the module but no image in the label provides it: leftover from the template?
 
 ## Upstream
 
